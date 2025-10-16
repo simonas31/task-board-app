@@ -1,7 +1,7 @@
 # 🧩 Realtime Collaborative Task Board
 
 A full-stack web application for managing tasks collaboratively in real time.
-Built with **React (TypeScript)**, **Node.js (Express + TypeScript)**, **PostgreSQL**, **Kafka**, and **Docker**.
+Built with **React (TypeScript)**, **Laravel**, **PostgreSQL**, **Kafka**, and **Docker**.
 
 **Key Features:**
 
