@@ -1,0 +1,9 @@
+include:
+  - ./backend/compose.dev.yaml
+  - ./frontend/compose.dev.yaml
+
+networks:
+  task-board-app-dev:
+
+volumes:
+  db-data-dev:
