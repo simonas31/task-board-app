@@ -9,6 +9,7 @@ services:
     ports:
       # Map port 80 inside the container to the port specified by 'NGINX_PORT' on the host machine
       - "80:80"
+      - "443:443"
     environment:
       - NGINX_HOST=localhost
       - NGINX_PORT=80
