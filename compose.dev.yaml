@@ -3,7 +3,7 @@ services:
 
   # 1. Nginx: Web server that receives requests and forwards PHP requests to php-fpm.
   nginx:
-    container_name: nginx-dev
+    container_name: nginx
     image: nginx:latest
     ports:
       - "80:80" # Mapped to 8080 on host to avoid conflicts with other services
@@ -17,16 +17,17 @@ services:
 
   # 2. PHP-FPM: The engine that executes the Laravel application code.
   php-fpm:
-    container_name: php-fpm-dev
+    container_name: php-fpm
     build:
-      context: ./backend
+      context: .
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: development
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
       - ./backend:/var/www
     networks:
@@ -37,9 +38,9 @@ services:
 
   # 3. Workspace: A utility container for running Artisan, Composer, and Vite commands.
   workspace:
-    container_name: workspace-dev
+    container_name: workspace
     build:
-      context: ./backend
+      context: .
       dockerfile: ./docker/development/workspace/Dockerfile
       args:
         UID: ${UID:-1000}
@@ -49,7 +50,7 @@ services:
     tty: true
     stdin_open: true
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
       - ./backend:/var/www
     networks:
@@ -57,7 +58,7 @@ services:
 
   # 4. Postgres: The database for Laravel.
   postgres:
-    container_name: postgres-dev
+    container_name: postgres
     image: postgres:18-alpine
     ports:
       - "5432:5432"
@@ -72,7 +73,7 @@ services:
 
   # 5. Redis: In-memory cache and queue server.
   redis:
-    container_name: redis-dev
+    container_name: redis
     image: redis:alpine
     ports:
       - "6379:6379"
@@ -83,9 +84,9 @@ services:
 
   # 6. Frontend: The React development server.
   frontend:
-    container_name: frontend-dev
+    container_name: frontend
     build:
-      context: ./frontend
+      context: .
       dockerfile: Dockerfile
       target: development
     volumes:
