@@ -93,7 +93,7 @@ small {
   --text: oklch(96.61% 0 0);
   --background: oklch(14.5% 0 0); /* Fixed: Removed duplicate */
   --foreground: oklch(98.5% 0 0);
-  --card: oklch(14.5% 0 0);
+  --card: oklch(36.768% 0.00004 271.152);
   --card-foreground: oklch(98.5% 0 0);
   --popover: oklch(14.5% 0 0);
   --popover-foreground: oklch(98.5% 0 0);
