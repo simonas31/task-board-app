@@ -19,7 +19,7 @@ services:
   php-fpm:
     container_name: php-fpm
     build:
-      context: .
+      context: ./backend
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: development
       args:
@@ -27,7 +27,7 @@ services:
         GID: ${GID:-1000}
     user: "${UID:-1000}:${GID:-1000}"
     env_file:
-      - .env
+      - ./backend/.env
     volumes:
       - ./backend:/var/www
     networks:
@@ -40,7 +40,7 @@ services:
   workspace:
     container_name: workspace
     build:
-      context: .
+      context: ./backend
       dockerfile: ./docker/development/workspace/Dockerfile
       args:
         UID: ${UID:-1000}
@@ -50,7 +50,7 @@ services:
     tty: true
     stdin_open: true
     env_file:
-      - .env
+      - ./backend/.env
     volumes:
       - ./backend:/var/www
     networks:
@@ -86,7 +86,7 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile
       target: development
     volumes:
