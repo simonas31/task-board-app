@@ -44,7 +44,7 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <>
       <Card className="w-md mx-3 sm:mx-auto">
         <CardHeader>
           <div className="text-center">
@@ -132,7 +132,7 @@ const RegisterPage = () => {
           </div>
         </CardFooter>
       </Card>
-    </div>
+    </>
   );
 };
 
