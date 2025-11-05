@@ -27,7 +27,7 @@ services:
         GID: ${GID:-1000}
     user: "${UID:-1000}:${GID:-1000}"
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
       - ./backend:/var/www
     networks:
@@ -50,7 +50,7 @@ services:
     tty: true
     stdin_open: true
     env_file:
-      - ./backend/.env
+      - .env
     volumes:
       - ./backend:/var/www
     networks:
@@ -63,9 +63,12 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-laravel}
-      POSTGRES_USER: ${DB_USERNAME:-sail}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - path: .env
+        required: true
     volumes:
       - db-data-dev:/var/lib/postgresql/data
     networks:
