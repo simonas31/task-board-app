@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\Roles;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -73,6 +74,8 @@ class AuthController extends ApiController
         $data = $request->validated();
 
         $user = User::create($data);
+
+        $user->syncRoles(Roles::USER);
 
         return $this->jsonResponse(compact('user'), 201);
     }
