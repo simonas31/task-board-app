@@ -12,7 +12,7 @@ class Project extends Model
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory;
 
-    protected array $fillable = ['name'];
+    protected $fillable = ['name'];
 
     public function boards(): HasMany
     {

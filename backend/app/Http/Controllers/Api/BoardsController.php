@@ -5,17 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Boards\StoreBoardRequest;
 use App\Http\Requests\Boards\UpdateBoardRequest;
 use App\Models\Board;
+use App\Models\Project;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class BoardsController extends ApiController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request, Project $project): JsonResponse
     {
         // fetch user boards
-        return $this->jsonResponse([]);
+        $user = $request->user();
+
+        $boards = $project
+            ->boards()
+            ->get();
+
+        return $this->jsonResponse(compact('boards'));
     }
 
     /**

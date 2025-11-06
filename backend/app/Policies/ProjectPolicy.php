@@ -4,16 +4,21 @@ namespace App\Policies;
 
 use App\Models\Project;
 use App\Models\User;
+use App\Services\DataAccessService;
 use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
+    public function __construct(
+        protected DataAccessService $accessService
+    ) {}
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $this->accessService->projectsQuery()->exists();
     }
 
     /**
@@ -21,7 +26,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return false;
+        return $this->accessService->projectsQuery()->exists();
     }
 
     /**
@@ -29,7 +34,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -37,7 +42,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return false;
+        return $this->accessService->projectsQuery()->exists();
     }
 
     /**
@@ -45,7 +50,7 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        return false;
+        return $this->accessService->projectsQuery()->exists();
     }
 
     /**
@@ -53,14 +58,6 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Project $project): bool
-    {
-        return false;
+        return true;
     }
 }

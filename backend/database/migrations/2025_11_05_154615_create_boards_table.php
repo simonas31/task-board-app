@@ -33,7 +33,7 @@ return new class extends Migration
 
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->foreignId('board_id')->constrained('boards')->cascadeOnDelete();
             $table->string('title');
             $table->text('description');
             $table->string('status');

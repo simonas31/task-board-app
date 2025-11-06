@@ -6,16 +6,24 @@ use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Models\Board;
 use App\Models\Project;
+use App\Services\DataAccessService;
 use Illuminate\Http\JsonResponse;
 
 class ProjectsController extends ApiController
 {
+    public function __construct(
+        protected DataAccessService $accessService
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index(): JsonResponse
     {
-        $projects = Project::with('boards');
+        $projects = $this->accessService
+            ->projectsQuery()
+            ->with('boards');
+
         return $this->jsonResponse(compact('projects'));
     }
 
@@ -25,7 +33,7 @@ class ProjectsController extends ApiController
     public function store(StoreProjectRequest $request): JsonResponse
     {
         $project = Project::create($request->validated());
-        return $this->jsonResponse(compact('project'));
+        return $this->jsonResponse(compact('project'), 201);
     }
 
     /**

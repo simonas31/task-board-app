@@ -12,7 +12,7 @@ class Board extends Model
     /** @use HasFactory<\Database\Factories\BoardFactory> */
     use HasFactory;
 
-    protected array $fillable = ['name', 'project_id'];
+    protected $fillable = ['name', 'project_id'];
 
     public function project(): BelongsTo
     {

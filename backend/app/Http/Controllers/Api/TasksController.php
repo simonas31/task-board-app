@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
+use App\Models\Board;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 
@@ -12,18 +13,19 @@ class TasksController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Board $board): JsonResponse
     {
-        return $this->jsonResponse();
+        $tasks = $board->tasks()->get();
+        return $this->jsonResponse(compact('tasks'));
     }
 
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request): JsonResponse
+    public function store(StoreTaskRequest $request, Board $board): JsonResponse
     {
-        $task = Task::create($request->validated());
+        $task = $board->tasks()->create($request->validated());
         return $this->jsonResponse(compact('task'), 201);
     }
 
