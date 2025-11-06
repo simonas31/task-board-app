@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends ApiController
 {
@@ -17,14 +16,14 @@ class AuthController extends ApiController
     {
         $credentials = $request->validated();
 
-        if (!$accessToken = JWTAuth::attempt($credentials)) {
+        if (!$accessToken = auth()->attempt($credentials)) {
             return response()->json(
                 ['message' => 'Invalid credentials'],
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        $user = JWTAuth::user();
+        $user = auth()->user();
         $accessTokenTTL = auth()->factory()->getTTL();
         $refreshToken = auth()->setTTL(60 * 24 * 7)->tokenById($user->getKey());
         $refreshTokenTTL = 60 * 60 * 24 * 7;
@@ -43,7 +42,9 @@ class AuthController extends ApiController
                     $accessTokenTTL,
                     secure: true,
                     httpOnly: true
-                ),
+                )
+            )
+            ->withCookie(
                 cookie(
                     'refreshToken',
                     $refreshToken,
@@ -57,7 +58,7 @@ class AuthController extends ApiController
     public function me(): JsonResponse
     {
         try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
+            if (! $user = auth()->user()) {
                 return $this->jsonResponse(['error' => 'User not found'], 404);
             }
         } catch (JWTException $e) {
@@ -85,7 +86,8 @@ class AuthController extends ApiController
             return $this->jsonResponse(['error' => 'Refresh token is missing'], 401);
         }
 
-        $accessToken = auth()->setToken($refreshToken)->refresh();
+        $user = auth()->setToken($refreshToken)->userOrFail();
+        $accessToken = auth()->tokenById($user->id);
         $accessTokenTTL = auth()->factory()->getTTL();
 
         return $this->jsonResponse([
@@ -101,9 +103,14 @@ class AuthController extends ApiController
             ));
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
+        auth()->logout();
+        // invalidate refresh token
+        if ($refreshToken = $request->cookie('refreshToken')) {
+            auth()->setToken($refreshToken)->invalidate();
+        }
+
         return $this->jsonResponse();
     }
 }

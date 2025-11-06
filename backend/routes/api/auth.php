@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Route;
 Route::controller(AuthController::class)
     ->group(function () {
         Route::post('/login', 'login');
-        Route::post('/refresh-token', 'refresh');
+        Route::post('/register', 'register');
+        Route::post('/refresh-token', 'refreshToken');
     });
 
 // authenticated routes
 Route::middleware('auth:api')
     ->controller(AuthController::class)
     ->group(function () {
-        Route::post('/register', 'register');
-        Route::post('/logout', 'logout');
         Route::get('/me', 'me');
+        Route::post('/logout', 'logout');
     });
