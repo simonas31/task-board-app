@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
 
 class BoardsController extends ApiController
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Board::class);
+    }
+
     /**
      * Display a listing of the resource.
      */

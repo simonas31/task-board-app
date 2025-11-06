@@ -13,7 +13,9 @@ class ProjectsController extends ApiController
 {
     public function __construct(
         protected DataAccessService $accessService
-    ) {}
+    ) {
+        $this->authorizeResource(Project::class);
+    }
 
     /**
      * Display a listing of the resource.

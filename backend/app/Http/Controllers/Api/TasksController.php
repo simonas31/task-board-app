@@ -10,6 +10,11 @@ use Illuminate\Http\JsonResponse;
 
 class TasksController extends ApiController
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Task::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
