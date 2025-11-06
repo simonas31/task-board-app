@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Boards;
+namespace App\Http\Requests\Projects;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBoardRequest extends FormRequest
+class UpdateProjectRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,7 +14,7 @@ class StoreBoardRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
+            'name' => 'required|string|unique:name'
         ];
     }
 }

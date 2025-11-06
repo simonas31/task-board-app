@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Requests\Tasks\StoreTaskRequest;
+use App\Http\Requests\Tasks\UpdateTaskRequest;
+use App\Models\Task;
+use Illuminate\Http\JsonResponse;
+
+class TasksController extends ApiController
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): JsonResponse
+    {
+        return $this->jsonResponse();
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreTaskRequest $request): JsonResponse
+    {
+        $task = Task::create($request->validated());
+        return $this->jsonResponse(compact('task'), 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Task $task): JsonResponse
+    {
+        return $this->jsonResponse(compact('task'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
+    {
+        $task->update($request->validated());
+        return $this->jsonResponse(compact('task'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Task $task): JsonResponse
+    {
+        $task->delete();
+        return $this->jsonResponse(compact('task'));
+    }
+
+    public function forceDelete(Task $task): JsonResponse
+    {
+        $task->forceDelete();
+        return $this->jsonResponse(compact('task'));
+    }
+}
