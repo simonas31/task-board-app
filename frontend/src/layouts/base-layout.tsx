@@ -3,7 +3,7 @@ import Header from "@/components/partials/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Outlet } from "react-router";
 
-const DashboardLayout = () => {
+const BaseLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -15,4 +15,4 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+export default BaseLayout;
