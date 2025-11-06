@@ -39,10 +39,10 @@ export default function Header() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              John Doe
+            <div className="flex transition-all p-1 rounded-md hover:cursor-pointer hover:bg-accent dark:hover:bg-accent/50">
+              <span className="mx-1">John Doe</span>
               <ChevronDown />
-            </Button>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
