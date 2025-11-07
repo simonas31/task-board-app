@@ -22,8 +22,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { z } from "zod";
+import { api } from "@/lib/axios";
+import * as React from "react";
+import { toast } from "sonner";
 
 const registerSchema = z.object({
   firstname: z.string().min(1),
@@ -35,12 +38,26 @@ const registerSchema = z.object({
 });
 
 const RegisterPage = () => {
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
   });
 
-  function onSubmit(values: z.infer<typeof registerSchema>) {
-    console.log(values);
+  function onSubmit(data: z.infer<typeof registerSchema>) {
+    setLoading(true);
+    api
+      .post("/register", data)
+      .then(() => {
+        setLoading(false);
+        toast.success("Account has been created successfully!");
+        navigate("/login");
+      })
+      .catch(() => {
+        setLoading(false);
+        toast.error("Something went wrong. Try again");
+      });
   }
 
   return (
@@ -64,7 +81,7 @@ const RegisterPage = () => {
                   <FormItem>
                     <FormLabel>First name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -77,7 +94,7 @@ const RegisterPage = () => {
                   <FormItem>
                     <FormLabel>Last name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -91,7 +108,7 @@ const RegisterPage = () => {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <InputGroup>
-                        <InputGroupInput {...field} />
+                        <InputGroupInput disabled={loading} {...field} />
                         <InputGroupAddon>
                           <Mail />
                         </InputGroupAddon>
@@ -109,7 +126,11 @@ const RegisterPage = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <InputGroup>
-                        <InputGroupInput type="password" {...field} />
+                        <InputGroupInput
+                          disabled={loading}
+                          type="password"
+                          {...field}
+                        />
                         <InputGroupAddon>
                           <Lock />
                         </InputGroupAddon>
@@ -119,7 +140,9 @@ const RegisterPage = () => {
                   </FormItem>
                 )}
               />
-              <Button className="w-full mt-2">Sign up</Button>
+              <Button className="w-full mt-2" disabled={loading}>
+                Sign up
+              </Button>
             </form>
           </Form>
         </CardContent>

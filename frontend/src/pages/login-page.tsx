@@ -21,7 +21,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, User } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { z } from "zod";
 import { api } from "@/lib/axios";
 import * as React from "react";
@@ -36,6 +36,7 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -48,6 +49,7 @@ const LoginPage = () => {
       .then(() => {
         setLoading(false);
         toast.success("You've logged in successfully!");
+        navigate("/dashboard");
       })
       .catch(() => {
         setLoading(false);
