@@ -23,6 +23,9 @@ import { Lock, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { z } from "zod";
+import { api } from "@/lib/axios";
+import * as React from "react";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -32,12 +35,24 @@ const loginSchema = z.object({
 });
 
 const LoginPage = () => {
+  const [loading, setLoading] = React.useState<boolean>(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
-    console.log(values);
+  function onSubmit(data: z.infer<typeof loginSchema>) {
+    setLoading(true);
+    api
+      .post("/login", data)
+      .then(() => {
+        setLoading(false);
+        toast.success("You've logged in successfully!");
+      })
+      .catch(() => {
+        setLoading(false);
+        toast.error("Something went wrong. Try again");
+      });
   }
 
   return (
@@ -62,7 +77,7 @@ const LoginPage = () => {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <InputGroup>
-                        <InputGroupInput {...field} />
+                        <InputGroupInput disabled={loading} {...field} />
                         <InputGroupAddon>
                           <User />
                         </InputGroupAddon>
@@ -80,7 +95,11 @@ const LoginPage = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <InputGroup>
-                        <InputGroupInput type="password" {...field} />
+                        <InputGroupInput
+                          type="password"
+                          disabled={loading}
+                          {...field}
+                        />
                         <InputGroupAddon>
                           <Lock />
                         </InputGroupAddon>
@@ -90,7 +109,11 @@ const LoginPage = () => {
                   </FormItem>
                 )}
               />
-              <Button className="w-full mt-2" variant="outline">
+              <Button
+                className="w-full mt-2"
+                variant="outline"
+                disabled={loading}
+              >
                 Sign in
               </Button>
             </form>
