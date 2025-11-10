@@ -38,7 +38,7 @@ class AuthController extends ApiController
         ])
             ->withCookie(
                 cookie(
-                    'accessToken',
+                    'token',
                     $accessToken,
                     $accessTokenTTL,
                     secure: true,
@@ -98,7 +98,7 @@ class AuthController extends ApiController
             'accessTokenTTL' => $accessTokenTTL * 60,
         ])
             ->withCookie(cookie(
-                'accessToken',
+                'token',
                 $accessToken,
                 $accessTokenTTL,
                 secure: true,

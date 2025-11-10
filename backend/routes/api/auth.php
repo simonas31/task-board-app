@@ -12,7 +12,7 @@ Route::controller(AuthController::class)
     });
 
 // authenticated routes
-Route::middleware('auth:api')
+Route::middleware('jwt')
     ->controller(AuthController::class)
     ->group(function () {
         Route::get('/me', 'me');
