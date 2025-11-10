@@ -62,7 +62,7 @@ const RegisterPage = () => {
 
   return (
     <>
-      <Card className="w-md mx-3 sm:mx-auto">
+      <Card className="w-md mx-3 sm:mx-auto" variant="light">
         <CardHeader>
           <div className="text-center">
             <h4>Sign up</h4>

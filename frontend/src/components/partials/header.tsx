@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuLabel,
@@ -18,6 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
+import ThemeSwitcher from "../theme-switcher";
 
 export default function Header() {
   const { open } = useSidebar();
@@ -36,6 +36,8 @@ export default function Header() {
         <SidebarTrigger />
       </div>
       <div className="flex items-center space-x-2">
+        <ThemeSwitcher />
+
         <Button variant="ghost" size="icon" className="size-7">
           <Bell className="size-5" />
         </Button>
@@ -47,7 +49,7 @@ export default function Header() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild disabled={loading}>
-            <div className="flex transition-all p-1 rounded-md hover:cursor-pointer hover:bg-accent dark:hover:bg-accent/50">
+            <div className="flex p-1">
               <span className="mx-1">
                 {user?.firstname + " " + user?.lastname}
               </span>
@@ -56,12 +58,10 @@ export default function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuGroup>
-              <DropdownMenuItem disabled={loading}>
-                Profile
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            <DropdownMenuItem disabled={loading}>
+              Profile
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               disabled={loading}
