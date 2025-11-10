@@ -13,9 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Bell, ChevronDown } from "lucide-react";
+import { api } from "@/lib/axios";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Header() {
   const { open } = useSidebar();
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   return (
     <div
@@ -38,7 +46,7 @@ export default function Header() {
         </Avatar>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild disabled={loading}>
             <div className="flex transition-all p-1 rounded-md hover:cursor-pointer hover:bg-accent dark:hover:bg-accent/50">
               <span className="mx-1">John Doe</span>
               <ChevronDown />
@@ -47,13 +55,31 @@ export default function Header() {
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled={loading}>
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              disabled={loading}
+              onClick={() => {
+                setLoading(true);
+                api
+                  .post("/logout")
+                  .then(() => {
+                    setUser(null);
+                    toast.success("You've logged out successfully!");
+                    navigate("/login");
+                  })
+                  .catch(() => {
+                    toast.success("Something went wrong. Try again");
+                  })
+                  .finally(() => {
+                    setLoading(false);
+                  });
+              }}
+            >
               Log out
               <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
             </DropdownMenuItem>

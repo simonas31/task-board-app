@@ -75,7 +75,7 @@ class AuthController extends ApiController
 
         $user = User::create($data);
 
-        $user->syncRoles(Roles::USER);
+        $user->assignRole(Roles::USER);
 
         return $this->jsonResponse(compact('user'), 201);
     }

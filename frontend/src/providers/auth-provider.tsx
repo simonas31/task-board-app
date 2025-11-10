@@ -46,7 +46,10 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
   // additional: add loading screen
   if (isLoading) {
     return <PageLoader />;
-  } else if (!unprotectedRoutes.includes(location.pathname)) {
+  } else if (data && unprotectedRoutes.includes(location.pathname)) {
+    navigate("/dashboard");
+    return;
+  } else if (!data && !unprotectedRoutes.includes(location.pathname)) {
     navigate("/login");
     return;
   }

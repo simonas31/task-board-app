@@ -26,6 +26,7 @@ import { z } from "zod";
 import { api } from "@/lib/axios";
 import * as React from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -35,6 +36,7 @@ const loginSchema = z.object({
 });
 
 const LoginPage = () => {
+  const { setUser } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -46,8 +48,9 @@ const LoginPage = () => {
     setLoading(true);
     api
       .post("/login", data)
-      .then(() => {
+      .then((res) => {
         setLoading(false);
+        setUser(res.data.user);
         toast.success("You've logged in successfully!");
         navigate("/dashboard");
       })
