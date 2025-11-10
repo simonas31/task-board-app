@@ -9,7 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Boxes, Home, Logs } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 // temporary items
 const items = [
@@ -31,6 +31,8 @@ const items = [
 ];
 
 export default function AppSidebar() {
+  const location = useLocation();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -40,7 +42,10 @@ export default function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
