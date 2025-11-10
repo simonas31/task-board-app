@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/components/auth-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import AppSidebar from "@/components/partials/app-sidebar";
 import Header from "@/components/partials/header";
 import { SidebarProvider } from "@/components/ui/sidebar";

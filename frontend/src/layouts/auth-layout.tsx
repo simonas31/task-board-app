@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/components/auth-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import { Outlet } from "react-router";
 
 export default function AuthLayout() {
