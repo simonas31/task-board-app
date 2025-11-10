@@ -1,5 +1,7 @@
+import PageLoader from "@/components/page-loader";
 import { api } from "@/lib/axios";
 import { createContext } from "react";
+import { useLocation, useNavigate } from "react-router";
 import useSWR, { type KeyedMutator } from "swr";
 
 type AuthProviderProps = {
@@ -32,6 +34,8 @@ const fetcher = (url: string) => api.get(url).then((res) => res.data);
 const unprotectedRoutes = ["/login", "/register"];
 
 export function AuthProvider({ children, ...props }: AuthProviderProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data, isLoading, mutate } = useSWR<User | null>("/me", fetcher, {
     shouldRetryOnError: false,
     revalidateIfStale: false,
@@ -41,7 +45,10 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
 
   // additional: add loading screen
   if (isLoading) {
-    return <>Is Loading!</>;
+    return <PageLoader />;
+  } else if (!unprotectedRoutes.includes(location.pathname)) {
+    navigate("/login");
+    return;
   }
 
   const value: AuthProviderState = {
