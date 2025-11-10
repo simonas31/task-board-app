@@ -17,8 +17,10 @@ type User = {
   updatedAt: string;
 };
 
+type UserReturnType = User | null;
+
 type AuthProviderState = {
-  user: User | null | undefined;
+  user: UserReturnType | undefined;
   setUser: KeyedMutator<User | null>;
 };
 
@@ -29,14 +31,14 @@ const initialState: AuthProviderState = {
 
 const AuthProviderContext = createContext<AuthProviderState>(initialState);
 
-const fetcher = (url: string) => api.get(url).then((res) => res.data);
+const fetcher = (url: string) => api.get(url).then((res) => res.data.user);
 
 const unprotectedRoutes = ["/login", "/register"];
 
 export function AuthProvider({ children, ...props }: AuthProviderProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data, isLoading, mutate } = useSWR<User | null>("/me", fetcher, {
+  const { data, isLoading, mutate } = useSWR<UserReturnType>("/me", fetcher, {
     shouldRetryOnError: false,
     revalidateIfStale: false,
     revalidateOnFocus: false,

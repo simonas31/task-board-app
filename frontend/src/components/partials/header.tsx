@@ -23,7 +23,7 @@ export default function Header() {
   const { open } = useSidebar();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
 
   return (
     <div
@@ -48,7 +48,9 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild disabled={loading}>
             <div className="flex transition-all p-1 rounded-md hover:cursor-pointer hover:bg-accent dark:hover:bg-accent/50">
-              <span className="mx-1">John Doe</span>
+              <span className="mx-1">
+                {user?.firstname + " " + user?.lastname}
+              </span>
               <ChevronDown />
             </div>
           </DropdownMenuTrigger>
