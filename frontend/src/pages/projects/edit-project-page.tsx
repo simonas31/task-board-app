@@ -15,51 +15,52 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import * as React from "react";
+import { useParams } from "react-router";
+import useSWR from "swr";
 
-const createProjectSchema = z.object({
+const updateProjectSchema = z.object({
   name: z.string().min(1, {
     message: "Project name is required",
   }),
 });
 
-const fetcher = (url: string, body?: z.infer<typeof createProjectSchema>) => {
-  return api.post(url, body);
+const fetcher = (url: string, body?: z.infer<typeof updateProjectSchema>) => {
+  return api.put(url, body);
 };
+
+const projectFetcher = (url: string) =>
+  api.get(url).then((res) => res.data.project);
 
 type Project = {
   id: number;
   name: string;
 };
 
-export default function CreateProjectPage() {
-  const form = useForm<z.infer<typeof createProjectSchema>>({
-    resolver: zodResolver(createProjectSchema),
-    defaultValues: {
-      name: "",
-    },
+export default function EditProjectPage() {
+  const { projectId } = useParams();
+  const { data: project, isLoading: isLoadingProject } = useSWR<Project>(
+    `/projects/${projectId}`,
+    projectFetcher
+  );
+
+  const form = useForm<z.infer<typeof updateProjectSchema>>({
+    resolver: zodResolver(updateProjectSchema),
+    values: project,
   });
-  const { formState } = form;
   const { data, isLoading, error, execute } = useApi<
     Project,
-    z.infer<typeof createProjectSchema>
-  >("/projects", fetcher);
+    z.infer<typeof updateProjectSchema>
+  >(`/projects/${projectId}`, fetcher);
 
-  async function onSubmit(formData: z.infer<typeof createProjectSchema>) {
+  async function onSubmit(formData: z.infer<typeof updateProjectSchema>) {
     await execute(formData);
   }
 
   React.useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      form.reset();
-    }
-  }, [formState, form]);
-
-  React.useEffect(() => {
     if (data) {
-      toast.success("Project created successfully");
-      form.reset();
+      toast.success("Project updated successfully");
     } else if (error) {
-      toast.error("Failed to create project. Try again");
+      toast.error("Failed to update project. Try again");
     }
   }, [form, data, error]);
 
@@ -74,7 +75,7 @@ export default function CreateProjectPage() {
               <FormItem>
                 <FormLabel>Project name</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} {...field} />
+                  <Input {...field} disabled={isLoadingProject || isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,9 +84,9 @@ export default function CreateProjectPage() {
           <Button
             className="w-full mt-2"
             variant="outline"
-            disabled={isLoading}
+            disabled={isLoadingProject || isLoading}
           >
-            Create
+            Update
           </Button>
         </form>
       </Form>

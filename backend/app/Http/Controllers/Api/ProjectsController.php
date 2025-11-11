@@ -27,6 +27,7 @@ class ProjectsController extends ApiController
         $projects = $this->accessService
             ->projectsQuery()
             ->with('boards')
+            ->orderBy('id')
             ->simplePaginate()
             ->withQueryString();
 

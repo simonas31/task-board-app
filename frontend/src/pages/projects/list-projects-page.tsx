@@ -26,7 +26,14 @@ export default function ListProjectsPage() {
     "/projects",
     fetcher
   );
+
   const [data, setData] = React.useState(() => swrData?.data || []);
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      setData(swrData?.data || []);
+    }
+  }, [isLoading, swrData]);
 
   const columns = React.useMemo<ColumnDef<Project>[]>(() => {
     return [
