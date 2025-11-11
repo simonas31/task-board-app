@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import ThemeSwitcher from "../theme-switcher";
 
 export default function Header() {
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
@@ -29,7 +29,7 @@ export default function Header() {
     <div
       className={cn(
         "flex justify-between p-3 border shadow-lg content-center items-center transition-all",
-        open && "ml-3 rounded-bl-2xl"
+        open && !isMobile && "ml-3 rounded-bl-2xl"
       )}
     >
       <div className="content-center">

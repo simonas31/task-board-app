@@ -24,7 +24,9 @@ class ProjectsController extends ApiController
     {
         $projects = $this->accessService
             ->projectsQuery()
-            ->with('boards');
+            ->with('boards')
+            ->simplePaginate()
+            ->withQueryString();
 
         return $this->jsonResponse(compact('projects'));
     }
