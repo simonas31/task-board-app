@@ -17,6 +17,11 @@ export const RoutesMap = () => {
         <Route element={<BaseLayout />}>
           <Route index path="/dashboard" />
           <Route path="/projects" element={<ListProjectsPage />} />
+          <Route path="/projects/create" element={<ListProjectsPage />} />
+          <Route
+            path="/projects/:projectId/edit"
+            element={<ListProjectsPage />}
+          />
         </Route>
       </Routes>
     </>

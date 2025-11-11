@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/data-table";
 import { api } from "@/lib/axios";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Edit, Trash } from "lucide-react";
+import { Edit, Plus, Trash } from "lucide-react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import useSWR from "swr";
@@ -87,6 +87,13 @@ export default function ListProjectsPage() {
 
   return (
     <div className="container mx-auto">
+      <div className="flex justify-end mb-2">
+        <Link to="/projects/create">
+          <Button size="sm">
+            Create project <Plus />
+          </Button>
+        </Link>
+      </div>
       <DataTable
         columns={columns}
         data={data?.data || []}
