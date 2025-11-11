@@ -4,6 +4,7 @@ import RegisterPage from "./pages/auth/register-page";
 import AuthLayout from "./layouts/auth-layout";
 import BaseLayout from "./layouts/base-layout";
 import ListProjectsPage from "./pages/projects/list-projects-page";
+import CreateProjectPage from "./pages/projects/create-project-page";
 
 export const RoutesMap = () => {
   return (
@@ -17,11 +18,8 @@ export const RoutesMap = () => {
         <Route element={<BaseLayout />}>
           <Route index path="/dashboard" />
           <Route path="/projects" element={<ListProjectsPage />} />
-          <Route path="/projects/create" element={<ListProjectsPage />} />
-          <Route
-            path="/projects/:projectId/edit"
-            element={<ListProjectsPage />}
-          />
+          <Route path="/projects/create" element={<CreateProjectPage />} />
+          <Route path="/projects/:projectId/edit" />
         </Route>
       </Routes>
     </>

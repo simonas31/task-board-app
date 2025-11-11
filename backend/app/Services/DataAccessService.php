@@ -22,7 +22,7 @@ class DataAccessService
         return Project::query()
             ->whereIn('id', function ($q) {
                 return $q->select('project_id')
-                    ->from('user_project')
+                    ->from('project_user')
                     ->where('user_id', $this->user->getKey());
             });
     }

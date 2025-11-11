@@ -6,8 +6,10 @@ use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Models\Board;
 use App\Models\Project;
+use App\Models\User;
 use App\Services\DataAccessService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProjectsController extends ApiController
 {
@@ -36,7 +38,12 @@ class ProjectsController extends ApiController
      */
     public function store(StoreProjectRequest $request): JsonResponse
     {
+        /** @var User $user */
+        $user = $request->user();
+
         $project = Project::create($request->validated());
+        $user->projects()->attach($project->id);
+
         return $this->jsonResponse(compact('project'), 201);
     }
 
@@ -74,6 +81,7 @@ class ProjectsController extends ApiController
             });
             $board->delete();
         }
+        $project->users()->detach();
         $project->delete();
 
         return $this->jsonResponse(compact('project'));
