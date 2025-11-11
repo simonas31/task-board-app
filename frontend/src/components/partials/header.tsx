@@ -43,7 +43,7 @@ export default function Header() {
         </Button>
 
         <Avatar>
-          <AvatarImage src="https://github.com/" />
+          <AvatarImage src="" />
           <AvatarFallback>AV</AvatarFallback>
         </Avatar>
 

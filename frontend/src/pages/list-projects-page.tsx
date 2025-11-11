@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DataTable,
@@ -5,6 +6,9 @@ import {
 } from "@/components/ui/data-table";
 import { api } from "@/lib/axios";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Edit, Trash } from "lucide-react";
+import { Link } from "react-router";
+import { toast } from "sonner";
 import useSWR from "swr";
 
 type Project = {
@@ -45,6 +49,33 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: "name",
     header: "Project Name",
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const rowId = row.getValue("select");
+      return (
+        <div className="flex items-center space-x-2">
+          <Link to={`/projects/${rowId}/edit`}>
+            <Button size="sm">
+              <Edit />
+            </Button>
+          </Link>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => {
+              api.delete(`/projects/${rowId}`).then(() => {
+                toast.success("Project was deleted successfully!");
+              });
+            }}
+          >
+            <Trash />
+          </Button>
+        </div>
+      );
+    },
   },
 ];
 

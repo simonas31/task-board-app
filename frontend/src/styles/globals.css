@@ -65,7 +65,7 @@ small {
   --accent-foreground: oklch(20.5% 0 0);
 
   /* Destructive (Fixed Foreground) */
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(67.638% 0.21174 22.454);
   --destructive-foreground: oklch(98.5% 0 0); /* Fixed: Was unreadable */
 
   /* Chart Colors (Unchanged) */
@@ -112,7 +112,7 @@ small {
   --accent-foreground: oklch(98.5% 0 0);
 
   /* Destructive (Fixed Foreground) */
-  --destructive: oklch(0.396 0.141 25.723);
+  --destructive: oklch(67.638% 0.21174 22.454);
   --destructive-foreground: oklch(98.5% 0 0); /* Fixed: Better contrast */
 
   /* Chart Colors (Unchanged) */
