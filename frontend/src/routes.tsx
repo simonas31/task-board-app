@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router";
-import LoginPage from "./pages/login-page";
-import RegisterPage from "./pages/register-page";
+import LoginPage from "./pages/auth/login-page";
+import RegisterPage from "./pages/auth/register-page";
 import AuthLayout from "./layouts/auth-layout";
 import BaseLayout from "./layouts/base-layout";
-import ListProjectsPage from "./pages/list-projects-page";
+import ListProjectsPage from "./pages/projects/list-projects-page";
 
 export const RoutesMap = () => {
   return (
