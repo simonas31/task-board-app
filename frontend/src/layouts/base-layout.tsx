@@ -13,11 +13,13 @@ const BaseLayout = () => {
         <AppSidebar />
         <main className="w-full">
           <Header />
-          <Card className="m-3">
-            <CardContent>
-              <Outlet />
-            </CardContent>
-          </Card>
+          <div className="m-3">
+            <Card className="container mx-auto">
+              <CardContent>
+                <Outlet />
+              </CardContent>
+            </Card>
+          </div>
         </main>
       </SidebarProvider>
     </AuthProvider>

@@ -53,6 +53,7 @@ const columns: ColumnDef<Project>[] = [
   {
     id: "actions",
     header: "Actions",
+    size: 120,
     cell: ({ row }) => {
       const rowId = row.getValue("select");
       return (
