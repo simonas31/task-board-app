@@ -12,10 +12,10 @@ trait ModifyRequestKeys
             $camelizedKey = Str::camel((string) $key);
             if (is_array($value)) {
                 $data[$camelizedKey] = $this->camelize($value);
-                unset($data[$key]);
+                $this->unsetData($data, $camelizedKey, (string) $key);
             } else if (!isset($data[$camelizedKey])) {
                 $data[$camelizedKey] = $value;
-                unset($data[$key]);
+                $this->unsetData($data, $camelizedKey, $key);
             }
         }
         return $data;
@@ -27,12 +27,26 @@ trait ModifyRequestKeys
             $snakeCaseKey = Str::snake((string) $key);
             if (is_array($value)) {
                 $data[$snakeCaseKey] = $this->snakeCase($value);
-                unset($data[$key]);
+                $this->unsetData($data, $snakeCaseKey, $key);
             } else if (!isset($data[$snakeCaseKey])) {
                 $data[$snakeCaseKey] = $value;
-                unset($data[$key]);
+                $this->unsetData($data, $snakeCaseKey, $key);
             }
         }
         return $data;
+    }
+
+    /**
+     * Unset data if keys dont match
+     * @param array $data
+     * @param string $checkKey
+     * @param string $removeKey
+     * @return void
+     */
+    private function unsetData(array &$data, string $checkKey, string $removeKey): void
+    {
+        if ($checkKey !== $removeKey) {
+            unset($data[$removeKey]);
+        }
     }
 }

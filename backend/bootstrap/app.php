@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CamelizeResponseData;
 use App\Http\Middleware\JWTMiddleware;
+use App\Http\Middleware\SnakeCaseRequestData;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['jwt' => JWTMiddleware::class]);
         $middleware->api([
             HandleCors::class,
-            CamelizeResponseData::class
+            CamelizeResponseData::class,
+            SnakeCaseRequestData::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

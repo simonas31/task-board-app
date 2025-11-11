@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { DataTablePagination } from "./data-table-pagination";
+import * as React from "react";
+import { LoaderCircle } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -23,16 +25,34 @@ interface DataTableProps<TData, TValue> {
   isLoading: boolean;
 }
 
+export interface DataTableResponseData<T> {
+  data: T[];
+  from: number;
+  to: number;
+  path: string;
+  currentPage: number;
+  currentPageUrl: string;
+  firstPageUrl: string;
+  nextPageUrl: string | null;
+  perPage: number;
+  prevPageUrl: string | null;
+}
+
 export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
 }: DataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
   });
 
   return (
@@ -44,7 +64,13 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      style={{
+                        width:
+                          header.getSize() === 150 ? "auto" : header.getSize(),
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -58,7 +84,16 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <LoaderCircle className="animate-spin mx-auto" />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
