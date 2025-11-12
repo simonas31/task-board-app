@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import z from "zod";
 import { useParams } from "react-router";
-import useCrudForm from "@/hooks/use-crud-form";
+import useCrudForm from "@/hooks/use-generic-form";
 
 const updateProjectSchema = z.object({
   name: z.string().min(1, {
