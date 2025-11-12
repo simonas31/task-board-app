@@ -31,7 +31,7 @@ class TasksController extends ApiController
     public function store(StoreTaskRequest $request, Board $board): JsonResponse
     {
         $task = $board->tasks()->create($request->validated());
-        return $this->jsonResponse(compact('task'), 201);
+        return $this->jsonResponse($task, 201);
     }
 
     /**
@@ -39,7 +39,7 @@ class TasksController extends ApiController
      */
     public function show(Task $task): JsonResponse
     {
-        return $this->jsonResponse(compact('task'));
+        return $this->jsonResponse($task);
     }
 
     /**
@@ -48,7 +48,7 @@ class TasksController extends ApiController
     public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
         $task->update($request->validated());
-        return $this->jsonResponse(compact('task'));
+        return $this->jsonResponse($task);
     }
 
     /**
@@ -57,12 +57,12 @@ class TasksController extends ApiController
     public function destroy(Task $task): JsonResponse
     {
         $task->delete();
-        return $this->jsonResponse(compact('task'));
+        return $this->jsonResponse($task);
     }
 
     public function forceDelete(Task $task): JsonResponse
     {
         $task->forceDelete();
-        return $this->jsonResponse(compact('task'));
+        return $this->jsonResponse($task);
     }
 }

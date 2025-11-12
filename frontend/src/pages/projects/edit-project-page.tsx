@@ -8,28 +8,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import useApi from "@/hooks/use-api";
-import { api } from "@/lib/axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import z from "zod";
-import * as React from "react";
 import { useParams } from "react-router";
-import useSWR from "swr";
+import useCrudForm from "@/hooks/use-crud-form";
 
 const updateProjectSchema = z.object({
   name: z.string().min(1, {
     message: "Project name is required",
   }),
 });
-
-const fetcher = (url: string, body?: z.infer<typeof updateProjectSchema>) => {
-  return api.put(url, body);
-};
-
-const projectFetcher = (url: string) =>
-  api.get(url).then((res) => res.data.project);
 
 type Project = {
   id: number;
@@ -38,31 +25,19 @@ type Project = {
 
 export default function EditProjectPage() {
   const { projectId } = useParams();
-  const { data: project, isLoading: isLoadingProject } = useSWR<Project>(
-    `/projects/${projectId}`,
-    projectFetcher
-  );
-
-  const form = useForm<z.infer<typeof updateProjectSchema>>({
-    resolver: zodResolver(updateProjectSchema),
-    values: project,
-  });
-  const { data, isLoading, error, execute } = useApi<
+  const { form, isLoading, submitForm } = useCrudForm<
     Project,
-    z.infer<typeof updateProjectSchema>
-  >(`/projects/${projectId}`, fetcher);
+    typeof updateProjectSchema
+  >({
+    mode: "Update",
+    schema: updateProjectSchema,
+    mutateUrl: `/projects/${projectId}`,
+    fetchModelUrl: `/projects/${projectId}`,
+  });
 
   async function onSubmit(formData: z.infer<typeof updateProjectSchema>) {
-    await execute(formData);
+    await submitForm(formData);
   }
-
-  React.useEffect(() => {
-    if (data) {
-      toast.success("Project updated successfully");
-    } else if (error) {
-      toast.error("Failed to update project. Try again");
-    }
-  }, [form, data, error]);
 
   return (
     <>
@@ -75,7 +50,7 @@ export default function EditProjectPage() {
               <FormItem>
                 <FormLabel>Project name</FormLabel>
                 <FormControl>
-                  <Input {...field} disabled={isLoadingProject || isLoading} />
+                  <Input {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -84,7 +59,7 @@ export default function EditProjectPage() {
           <Button
             className="w-full mt-2"
             variant="outline"
-            disabled={isLoadingProject || isLoading}
+            disabled={isLoading}
           >
             Update
           </Button>

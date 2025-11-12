@@ -29,14 +29,13 @@ interface UseCrudFormReturn<
 type Mode = "Create" | "Update";
 
 interface UseCrudFormProps<TSchema extends ZodObject> {
-  id?: number;
   mode: Mode;
   schema: TSchema;
   mutateUrl: string;
   fetchModelUrl?: string;
   onSuccess?: () => void;
   onError?: () => void;
-  useFormOptions: UseFormProps<input<TSchema>, unknown, output<TSchema>>;
+  useFormOptions?: UseFormProps<input<TSchema>, unknown, output<TSchema>>;
 }
 
 function getModes(mode: Mode) {
@@ -46,8 +45,10 @@ function getModes(mode: Mode) {
   };
 }
 
-export default function useCrudForm<TModel, TSchema extends ZodObject>({
-  id,
+export default function useCrudForm<
+  TModel extends input<TSchema>,
+  TSchema extends ZodObject
+>({
   mode,
   schema,
   mutateUrl,
@@ -60,8 +61,8 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
   input<TSchema>,
   output<TSchema>
 > {
-  if (mode === "Update" && typeof id === "undefined") {
-    throw new Error("'id' is missing in hook properties");
+  if (mode === "Update" && typeof fetchModelUrl === "undefined") {
+    throw new Error("'fetchModelUrl' is missing in hook properties");
   }
 
   const modes = getModes(mode);
@@ -98,6 +99,7 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
   // here should go types of schema in both Input and Output
   const form = useForm<InputType, unknown, OutputType>({
     resolver: zodResolver(schema),
+    values: model,
     ...useFormOptions,
   });
 

@@ -37,7 +37,7 @@ class BoardsController extends ApiController
     public function store(StoreBoardRequest $request): JsonResponse
     {
         $board = Board::create($request->validated());
-        return $this->jsonResponse(compact('board'), 201);
+        return $this->jsonResponse($board, 201);
     }
 
     /**
@@ -45,7 +45,7 @@ class BoardsController extends ApiController
      */
     public function show(Board $board)
     {
-        return $this->jsonResponse(compact('board'));
+        return $this->jsonResponse($board);
     }
 
     /**
@@ -55,7 +55,7 @@ class BoardsController extends ApiController
     {
         $board->update($request->validated());
 
-        return $this->jsonResponse(compact('board'));
+        return $this->jsonResponse($board);
     }
 
     /**
@@ -65,6 +65,6 @@ class BoardsController extends ApiController
     {
         $board->delete();
 
-        return $this->jsonResponse(compact('board'));
+        return $this->jsonResponse($board);
     }
 }

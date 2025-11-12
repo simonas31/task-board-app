@@ -84,7 +84,7 @@ abstract class ApiController
         ];
     }
 
-    public function jsonResponse(array $data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
+    public function jsonResponse($data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
     {
         return response()->json($data, $status, $headers, $options);
     }

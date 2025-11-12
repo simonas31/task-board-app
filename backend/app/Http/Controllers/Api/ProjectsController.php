@@ -45,7 +45,7 @@ class ProjectsController extends ApiController
         $project = Project::create($request->validated());
         $user->projects()->attach($project->id);
 
-        return $this->jsonResponse(compact('project'), 201);
+        return $this->jsonResponse($project, 201);
     }
 
     /**
@@ -53,7 +53,7 @@ class ProjectsController extends ApiController
      */
     public function show(Project $project): JsonResponse
     {
-        return $this->jsonResponse(compact('project'));
+        return $this->jsonResponse($project);
     }
 
     /**
@@ -62,7 +62,7 @@ class ProjectsController extends ApiController
     public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
         $project->update($request->validated());
-        return $this->jsonResponse(compact('project'));
+        return $this->jsonResponse($project);
     }
 
     /**
@@ -85,6 +85,6 @@ class ProjectsController extends ApiController
         $project->users()->detach();
         $project->delete();
 
-        return $this->jsonResponse(compact('project'));
+        return $this->jsonResponse($project);
     }
 }
