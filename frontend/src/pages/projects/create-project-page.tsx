@@ -61,7 +61,7 @@ export default function CreateProjectPage() {
           <Button
             className="w-full mt-2"
             variant="outline"
-            disabled={isLoading}
+            isLoading={isLoading}
           >
             Create
           </Button>

@@ -117,7 +117,7 @@ const LoginPage = () => {
               <Button
                 className="w-full mt-2"
                 variant="outline"
-                disabled={loading}
+                isLoading={loading}
               >
                 Sign in
               </Button>

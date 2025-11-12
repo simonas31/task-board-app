@@ -140,7 +140,7 @@ const RegisterPage = () => {
                   </FormItem>
                 )}
               />
-              <Button className="w-full mt-2" disabled={loading}>
+              <Button className="w-full mt-2" isLoading={loading}>
                 Sign up
               </Button>
             </form>

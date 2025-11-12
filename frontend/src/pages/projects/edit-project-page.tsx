@@ -59,7 +59,7 @@ export default function EditProjectPage() {
           <Button
             className="w-full mt-2"
             variant="outline"
-            disabled={isLoading}
+            isLoading={isLoading}
           >
             Update
           </Button>

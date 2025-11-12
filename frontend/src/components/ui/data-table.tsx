@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { DataTablePagination } from "./data-table-pagination";
 import * as React from "react";
-import { LoaderCircle } from "lucide-react";
+import Loader from "./loader";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -90,7 +90,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  <LoaderCircle className="animate-spin mx-auto" />
+                  <Loader className="mx-auto" />
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
