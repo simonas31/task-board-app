@@ -1,10 +1,10 @@
-import type { AxiosResponse } from "axios";
+import { AxiosError, type AxiosResponse } from "axios";
 import * as React from "react";
 
 type ApiUseState<T> = {
   data: T | null;
   isLoading: boolean;
-  error: string | null;
+  error: AxiosError | string | null;
 };
 
 interface FetcherType<T, B = unknown> {
@@ -28,12 +28,16 @@ export default function useApi<T, B = unknown>(
       try {
         const res = await fetcher(url, body);
         setState({ data: res.data, isLoading: false, error: null });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
+        let error = "Something went wrong";
+        if (err instanceof AxiosError && err.response?.status === 422) {
+          error = err.response?.data;
+        }
+
         setState({
           data: null,
           isLoading: false,
-          error: "Something went wrong",
+          error: error,
         });
       }
     },
