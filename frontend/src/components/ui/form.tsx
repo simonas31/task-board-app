@@ -6,9 +6,12 @@ import {
   FormProvider,
   useFormContext,
   useFormState,
+  type Control,
   type ControllerProps,
+  type ControllerRenderProps,
   type FieldPath,
   type FieldValues,
+  type Path,
 } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -154,6 +157,38 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
+interface FormFieldWrapperProps<T extends FieldValues> {
+  name: Path<T>;
+  label: string;
+  render: (field: ControllerRenderProps<T>) => React.ReactElement;
+  control: Control<T>;
+  description?: string;
+}
+
+function FormFieldWrapper<T extends FieldValues>({
+  name,
+  label,
+  render: renderField,
+  control,
+  description,
+}: FormFieldWrapperProps<T>) {
+  // create form field input that would accept any input type such as select, datepicker, textarea and so on..
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>{renderField(field)}</FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
 export {
   // eslint-disable-next-line react-refresh/only-export-components
   useFormField,
@@ -164,4 +199,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FormFieldWrapper,
 };

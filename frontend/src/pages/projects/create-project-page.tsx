@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormFieldWrapper } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import z from "zod";
 import useCrudForm from "@/hooks/use-crud-form";
@@ -21,6 +14,8 @@ type Project = {
   id: number;
   name: string;
 };
+
+type CreateProjectSchema = z.infer<typeof createProjectSchema>;
 
 export default function CreateProjectPage() {
   const { form, isLoading, submitForm } = useCrudForm<
@@ -37,7 +32,7 @@ export default function CreateProjectPage() {
     },
   });
 
-  async function onSubmit(formData: z.infer<typeof createProjectSchema>) {
+  async function onSubmit(formData: CreateProjectSchema) {
     await submitForm(formData);
   }
 
@@ -45,18 +40,13 @@ export default function CreateProjectPage() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
+          <FormFieldWrapper<CreateProjectSchema>
             control={form.control}
             name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project name</FormLabel>
-                <FormControl>
-                  <Input disabled={isLoading} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Project name"
+            render={(field) => {
+              return <Input disabled={isLoading} {...field} />;
+            }}
           />
           <Button
             className="w-full mt-2"
