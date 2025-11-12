@@ -27,9 +27,9 @@ export default function CreateProjectPage() {
     Project,
     typeof createProjectSchema
   >({
+    mode: "Create",
     schema: createProjectSchema,
-    createUrl: "/projects",
-    editUrl: "",
+    mutateUrl: "/projects",
     useFormOptions: {
       defaultValues: {
         name: "",

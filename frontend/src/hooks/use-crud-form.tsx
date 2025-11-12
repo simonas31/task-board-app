@@ -26,21 +26,32 @@ interface UseCrudFormReturn<
   submitForm: (body?: TInput | undefined) => Promise<void>;
 }
 
+type Mode = "Create" | "Update";
+
 interface UseCrudFormProps<TSchema extends ZodObject> {
   id?: number;
+  mode: Mode;
   schema: TSchema;
-  createUrl: string;
-  editUrl: string;
+  mutateUrl: string;
+  fetchModelUrl?: string;
   onSuccess?: () => void;
   onError?: () => void;
   useFormOptions: UseFormProps<input<TSchema>, unknown, output<TSchema>>;
 }
 
+function getModes(mode: Mode) {
+  return {
+    isCreating: mode === "Create",
+    isUpdating: mode === "Update",
+  };
+}
+
 export default function useCrudForm<TModel, TSchema extends ZodObject>({
   id,
+  mode,
   schema,
-  createUrl,
-  editUrl,
+  mutateUrl,
+  fetchModelUrl,
   onSuccess,
   onError,
   useFormOptions,
@@ -49,7 +60,11 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
   input<TSchema>,
   output<TSchema>
 > {
-  const isEditing = !!id;
+  if (mode === "Update" && typeof id === "undefined") {
+    throw new Error("'id' is missing in hook properties");
+  }
+
+  const modes = getModes(mode);
 
   type InputType = input<TSchema>;
   type OutputType = output<TSchema>;
@@ -60,12 +75,12 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
     []
   );
 
-  const editFetcher = React.useCallback(
+  const updateFetcher = React.useCallback(
     (url: string, body?: InputType) => api.put(url, body),
     []
   );
 
-  const editModelFetcher = React.useCallback(
+  const modelFetcher = React.useCallback(
     (url: string) => api.get<TModel>(url).then((res) => res.data),
     []
   );
@@ -76,8 +91,8 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
     isLoading: loadingModel,
     error: modelError,
   } = useSWR<TModel>(
-    isEditing ? editUrl : null,
-    isEditing ? editModelFetcher : null
+    modes.isUpdating ? fetchModelUrl : null,
+    modes.isUpdating ? modelFetcher : null
   );
 
   // here should go types of schema in both Input and Output
@@ -93,8 +108,8 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
     data: mutationData,
     error: mutationError,
   } = useApi<TModel, InputType>(
-    isEditing ? editUrl : createUrl,
-    isEditing ? editFetcher : createFetcher
+    mutateUrl,
+    modes.isUpdating ? updateFetcher : createFetcher
   );
 
   const isLoading = loadingModel || loadingMutation;
@@ -119,7 +134,7 @@ export default function useCrudForm<TModel, TSchema extends ZodObject>({
       if (onSuccess) {
         onSuccess();
       } else {
-        toast.success("message of some sort");
+        toast.success("Record created successfully");
       }
     }
   }, [onSuccess, mutationData, form]);
