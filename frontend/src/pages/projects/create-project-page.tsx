@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormFieldWrapper } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import z from "zod";
-import useCrudForm from "@/hooks/use-generic-form";
+import useGenericForm from "@/hooks/use-generic-form";
 
 const createProjectSchema = z.object({
   name: z.string().min(1, {
@@ -18,7 +18,7 @@ type Project = {
 type CreateProjectSchema = z.infer<typeof createProjectSchema>;
 
 export default function CreateProjectPage() {
-  const { form, isLoading, submitForm } = useCrudForm<
+  const { form, isLoading, submitForm } = useGenericForm<
     Project,
     typeof createProjectSchema
   >({

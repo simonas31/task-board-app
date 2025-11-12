@@ -1,42 +1,18 @@
-import { api } from "@/lib/axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-  type FieldValues,
-  type UseFormProps,
-  type UseFormReturn,
-} from "react-hook-form";
 import { type ZodObject } from "zod";
 import { type input, type output } from "zod/v4/core";
+import type {
+  Mode,
+  UseGenericFormProps,
+  UseGenericFormReturn,
+} from "@/types/UseGenericForm.types";
+
+import { api } from "@/lib/axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import useApi from "./use-api";
 import useSWR from "swr";
 import * as React from "react";
 import { toast } from "sonner";
-import type { AxiosError } from "axios";
-
-interface UseCrudFormReturn<
-  TModel,
-  TInput extends FieldValues,
-  TOutput extends FieldValues
-> {
-  form: UseFormReturn<TInput, unknown, TOutput>;
-  model?: TModel;
-  isLoading: boolean;
-  mutationError: AxiosError | string | null;
-  submitForm: (body?: TInput | undefined) => Promise<void>;
-}
-
-type Mode = "Create" | "Update";
-
-interface UseCrudFormProps<TSchema extends ZodObject> {
-  mode: Mode;
-  schema: TSchema;
-  mutateUrl: string;
-  fetchModelUrl?: string;
-  onSuccess?: () => void;
-  onError?: () => void;
-  useFormOptions?: UseFormProps<input<TSchema>, unknown, output<TSchema>>;
-}
 
 function getModes(mode: Mode) {
   return {
@@ -45,7 +21,7 @@ function getModes(mode: Mode) {
   };
 }
 
-export default function useCrudForm<
+export default function useGenericForm<
   TModel extends input<TSchema>,
   TSchema extends ZodObject
 >({
@@ -56,7 +32,7 @@ export default function useCrudForm<
   onSuccess,
   onError,
   useFormOptions,
-}: UseCrudFormProps<TSchema>): UseCrudFormReturn<
+}: UseGenericFormProps<TSchema>): UseGenericFormReturn<
   TModel,
   input<TSchema>,
   output<TSchema>

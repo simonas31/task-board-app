@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import z from "zod";
 import { useParams } from "react-router";
-import useCrudForm from "@/hooks/use-generic-form";
+import useGenericForm from "@/hooks/use-generic-form";
 
 const updateProjectSchema = z.object({
   name: z.string().min(1, {
@@ -25,7 +25,7 @@ type Project = {
 
 export default function EditProjectPage() {
   const { projectId } = useParams();
-  const { form, isLoading, submitForm } = useCrudForm<
+  const { form, isLoading, submitForm } = useGenericForm<
     Project,
     typeof updateProjectSchema
   >({
