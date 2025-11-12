@@ -1,4 +1,4 @@
-import { type ZodObject } from "zod";
+import z, { type ZodObject } from "zod";
 import { type input, type output } from "zod/v4/core";
 import type {
   Mode,
@@ -23,7 +23,7 @@ function getModes(mode: Mode) {
 
 export default function useGenericForm<
   TModel extends input<TSchema>,
-  TSchema extends ZodObject
+  TSchema extends ZodObject<{ [key: string]: z.ZodType }>
 >({
   mode,
   schema,
