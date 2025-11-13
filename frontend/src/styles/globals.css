@@ -52,7 +52,7 @@ small {
   --popover-foreground: oklch(14.5% 0 0);
   --muted: oklch(97% 0 0);
   --muted-foreground: oklch(55.6% 0 0);
-  --border: oklch(92.2% 0 0);
+  --border: oklch(86.995% 0.0001 271.152);
   --input: oklch(92.2% 0 0);
   --ring: oklch(70.8% 0 0);
 
@@ -99,7 +99,7 @@ small {
   --popover-foreground: oklch(98.5% 0 0);
   --muted: oklch(26.9% 0 0);
   --muted-foreground: oklch(70.8% 0 0);
-  --border: oklch(26.9% 0 0);
+  --border: oklch(36.768% 0.00004 271.152);
   --input: oklch(26.9% 0 0);
   --ring: oklch(43.9% 0 0);
 
