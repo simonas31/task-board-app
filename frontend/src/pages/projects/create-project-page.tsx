@@ -5,9 +5,14 @@ import z from "zod";
 import useGenericForm from "@/hooks/use-generic-form";
 
 const createProjectSchema = z.object({
-  name: z.string().min(1, {
-    message: "Project name is required",
-  }),
+  name: z.string().min(1, "Project name is required"),
+  // boards: z
+  //   .array(
+  //     z.object({
+  //       name: z.string().min(1, "Board name is required"),
+  //     })
+  //   )
+  //   .optional(),
 });
 
 type Project = {
@@ -50,6 +55,9 @@ export default function CreateProjectPage() {
               },
             }}
           />
+          <div>
+            <p>Boards</p>
+          </div>
           <Button
             className="w-full mt-2"
             variant="outline"

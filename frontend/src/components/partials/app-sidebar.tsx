@@ -3,59 +3,119 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Boxes, Home, Logs } from "lucide-react";
-import { Link, useLocation } from "react-router";
+import { Boxes, ChevronDown, Home, Plus } from "lucide-react";
+import { Link } from "react-router";
+import { Collapsible, CollapsibleTrigger } from "../ui/collapsible";
+import { CollapsibleContent } from "@radix-ui/react-collapsible";
+import * as React from "react";
+
+interface NavItemType {
+  title: string;
+  url: string;
+  icon?: React.JSX.Element;
+}
+
+interface NavGroupType extends NavItemType {
+  items?: NavItemType[];
+}
+
+interface SidebarNavDataType {
+  groups: NavGroupType[];
+}
 
 // temporary items
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Projects",
-    url: "/projects",
-    icon: Boxes,
-  },
-  {
-    title: "Backlog",
-    url: "/backlog",
-    icon: Logs,
-  },
-];
+const data: SidebarNavDataType = {
+  groups: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: <Home />,
+    },
+    {
+      title: "Projects",
+      url: "#",
+      icon: <Boxes />,
+      items: [
+        // dynamically add projects from api
+        {
+          title: "Create New",
+          url: "/projects/create",
+          icon: <Plus />,
+        },
+      ],
+    },
+  ],
+};
 
 export default function AppSidebar() {
-  const location = useLocation();
+  const buildCollapsibleGroup = React.useCallback((group: NavGroupType) => {
+    return (
+      <Collapsible key={group.title} className="group/collapsible">
+        <SidebarMenuItem>
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton>
+              {group.title}{" "}
+              <ChevronDown className="ml-auto group-data-[state=open]/collapsible:-rotate-180 transition-transform" />
+            </SidebarMenuButton>
+          </CollapsibleTrigger>
+          {group.items?.length ? (
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {group.items.map((item) => (
+                  <SidebarMenuSubItem key={item.title}>
+                    <SidebarMenuSubButton asChild isActive={false}>
+                      <Link to={item.url}>
+                        {item.icon ? item.icon : ""}
+                        {item.title}
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          ) : null}
+        </SidebarMenuItem>
+      </Collapsible>
+    );
+  }, []);
+
+  const buildGroup = React.useCallback((group: NavGroupType) => {
+    return (
+      <SidebarGroupContent>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link to={group.url}>
+                {group.icon}
+                <span>{group.title}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroupContent>
+    );
+  }, []);
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="offcanvas">
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === item.url}
-                  >
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {data.groups.map((group) => {
+          const isCollapsible =
+            typeof group.items === "undefined" || group.items.length === 0;
+
+          return (
+            <SidebarGroup>
+              {isCollapsible ? buildGroup(group) : buildCollapsibleGroup(group)}
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
     </Sidebar>
   );

@@ -107,7 +107,7 @@ export default function ListProjectsPage() {
       <div className="flex justify-end mb-2">
         <Link to="/projects/create">
           <Button size="sm">
-            Create project <Plus />
+            <Plus /> Create project
           </Button>
         </Link>
       </div>
