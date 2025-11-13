@@ -32,8 +32,6 @@ const items = [
 
 export default function AppSidebar() {
   const location = useLocation();
-  const url = "/projects";
-  console.log(location.pathname.match(`/${url}/g`));
 
   return (
     <Sidebar collapsible="icon">

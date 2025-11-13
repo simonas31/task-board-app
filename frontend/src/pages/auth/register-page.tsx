@@ -5,20 +5,14 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormFieldWrapper } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -27,6 +21,8 @@ import { z } from "zod";
 import { api } from "@/lib/axios";
 import * as React from "react";
 import { toast } from "sonner";
+import type { User } from "@/providers/auth-provider";
+import useApi from "@/hooks/use-api";
 
 const registerSchema = z.object({
   firstname: z.string().min(1),
@@ -37,27 +33,35 @@ const registerSchema = z.object({
   }),
 });
 
-const RegisterPage = () => {
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const navigate = useNavigate();
+type RegisterSchema = z.infer<typeof registerSchema>;
 
-  const form = useForm<z.infer<typeof registerSchema>>({
+const registerFetcher = (url: string, body?: RegisterSchema) =>
+  api.post(url, body);
+
+const RegisterPage = () => {
+  const navigate = useNavigate();
+  const {
+    data,
+    isLoading,
+    error,
+    execute: submitForm,
+  } = useApi<User, RegisterSchema>("/register", registerFetcher);
+
+  React.useEffect(() => {
+    if (data) {
+      toast.success("Account has been created successfully!");
+      navigate("/login");
+    } else if (error) {
+      toast.error("Something went wrong. Try again");
+    }
+  }, [data, error, navigate]);
+
+  const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
   });
 
-  function onSubmit(data: z.infer<typeof registerSchema>) {
-    setLoading(true);
-    api
-      .post("/register", data)
-      .then(() => {
-        setLoading(false);
-        toast.success("Account has been created successfully!");
-        navigate("/login");
-      })
-      .catch(() => {
-        setLoading(false);
-        toast.error("Something went wrong. Try again");
-      });
+  async function onSubmit(data: RegisterSchema) {
+    await submitForm(data);
   }
 
   return (
@@ -74,73 +78,65 @@ const RegisterPage = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormField
+              <FormFieldWrapper<RegisterSchema>
                 control={form.control}
-                name="firstname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First name</FormLabel>
-                    <FormControl>
-                      <Input disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                formField={{
+                  name: "firstname",
+                  label: "First name",
+                  render: (field) => {
+                    return <Input disabled={isLoading} {...field} />;
+                  },
+                }}
               />
-              <FormField
+              <FormFieldWrapper<RegisterSchema>
                 control={form.control}
-                name="lastname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last name</FormLabel>
-                    <FormControl>
-                      <Input disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                formField={{
+                  name: "lastname",
+                  label: "Last name",
+                  render: (field) => {
+                    return <Input disabled={isLoading} {...field} />;
+                  },
+                }}
               />
-              <FormField
+              <FormFieldWrapper<RegisterSchema>
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
+                formField={{
+                  name: "email",
+                  label: "Email",
+                  render: (field) => {
+                    return (
                       <InputGroup>
-                        <InputGroupInput disabled={loading} {...field} />
+                        <InputGroupInput disabled={isLoading} {...field} />
                         <InputGroupAddon>
                           <Mail />
                         </InputGroupAddon>
                       </InputGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                    );
+                  },
+                }}
               />
-              <FormField
+              <FormFieldWrapper<RegisterSchema>
                 control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
+                formField={{
+                  name: "password",
+                  label: "Password",
+                  render: (field) => {
+                    return (
                       <InputGroup>
                         <InputGroupInput
-                          disabled={loading}
                           type="password"
+                          disabled={isLoading}
                           {...field}
                         />
                         <InputGroupAddon>
                           <Lock />
                         </InputGroupAddon>
                       </InputGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                    );
+                  },
+                }}
               />
-              <Button className="w-full mt-2" isLoading={loading}>
+              <Button className="w-full mt-2" isLoading={isLoading}>
                 Sign up
               </Button>
             </form>

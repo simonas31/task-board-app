@@ -41,7 +41,7 @@ export default function useGenericForm<
     throw new Error("'fetchModelUrl' is missing in hook properties");
   }
 
-  const modes = getModes(mode);
+  const modes = React.useMemo(() => getModes(mode), [mode]);
 
   type InputType = input<TSchema>;
   type OutputType = output<TSchema>;
@@ -108,14 +108,19 @@ export default function useGenericForm<
   // handle form reset logic useEffect #2
   React.useEffect(() => {
     if (mutationData) {
-      form.reset();
+      if (modes.isCreating) {
+        form.reset();
+      }
+
       if (onSuccess) {
         onSuccess();
       } else {
-        toast.success("Record created successfully");
+        toast.success(
+          `Record ${modes.isCreating ? "created" : "updated"} successfully`
+        );
       }
     }
-  }, [onSuccess, mutationData, form]);
+  }, [modes, onSuccess, mutationData, form]);
 
   return { form, model, isLoading, mutationError, submitForm: execute };
 }

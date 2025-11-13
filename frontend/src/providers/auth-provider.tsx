@@ -8,7 +8,7 @@ type AuthProviderProps = {
   children: React.ReactNode;
 };
 
-type User = {
+export type User = {
   id: number;
   firstname: string;
   lastname: string;

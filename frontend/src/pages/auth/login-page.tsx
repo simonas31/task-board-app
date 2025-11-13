@@ -5,28 +5,23 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormFieldWrapper } from "@/components/ui/form";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock, User } from "lucide-react";
+import { Lock, User as UserIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { z } from "zod";
 import { api } from "@/lib/axios";
-import * as React from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import useApi from "@/hooks/use-api";
+import type { User } from "@/providers/auth-provider";
+import * as React from "react";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -35,29 +30,36 @@ const loginSchema = z.object({
   }),
 });
 
-const LoginPage = () => {
-  const { setUser } = useAuth();
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const navigate = useNavigate();
+type LoginSchema = z.infer<typeof loginSchema>;
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+const loginFetcher = (url: string, body?: LoginSchema) => api.post(url, body);
+
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
+  const {
+    data,
+    isLoading,
+    error,
+    execute: submitForm,
+  } = useApi<User, LoginSchema>("/login", loginFetcher);
+
+  React.useEffect(() => {
+    if (data) {
+      setUser(data);
+      toast.success("You've logged in successfully!");
+      navigate("/dashboard");
+    } else if (error) {
+      toast.error("Something went wrong. Try again");
+    }
+  }, [data, error, setUser, navigate]);
+
+  const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
   });
 
-  function onSubmit(data: z.infer<typeof loginSchema>) {
-    setLoading(true);
-    api
-      .post("/login", data)
-      .then((res) => {
-        setLoading(false);
-        setUser(res.data.user);
-        toast.success("You've logged in successfully!");
-        navigate("/dashboard");
-      })
-      .catch(() => {
-        setLoading(false);
-        toast.error("Something went wrong. Try again");
-      });
+  async function onSubmit(data: LoginSchema) {
+    await submitForm(data);
   }
 
   return (
@@ -74,50 +76,48 @@ const LoginPage = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormField
+              <FormFieldWrapper<LoginSchema>
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
+                formField={{
+                  name: "email",
+                  label: "Email",
+                  render: (field) => {
+                    return (
                       <InputGroup>
-                        <InputGroupInput disabled={loading} {...field} />
+                        <InputGroupInput disabled={isLoading} {...field} />
                         <InputGroupAddon>
-                          <User />
+                          <UserIcon />
                         </InputGroupAddon>
                       </InputGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                    );
+                  },
+                }}
               />
-              <FormField
+              <FormFieldWrapper<LoginSchema>
                 control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
+                formField={{
+                  name: "password",
+                  label: "Password",
+                  render: (field) => {
+                    return (
                       <InputGroup>
                         <InputGroupInput
                           type="password"
-                          disabled={loading}
+                          disabled={isLoading}
                           {...field}
                         />
                         <InputGroupAddon>
                           <Lock />
                         </InputGroupAddon>
                       </InputGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                    );
+                  },
+                }}
               />
               <Button
                 className="w-full mt-2"
                 variant="outline"
-                isLoading={loading}
+                isLoading={isLoading}
               >
                 Sign in
               </Button>

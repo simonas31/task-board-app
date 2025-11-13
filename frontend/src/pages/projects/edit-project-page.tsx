@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormFieldWrapper } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import z from "zod";
 import { useParams } from "react-router";
@@ -17,6 +10,8 @@ const updateProjectSchema = z.object({
     message: "Project name is required",
   }),
 });
+
+type UpdateProjectSchema = z.infer<typeof updateProjectSchema>;
 
 type Project = {
   id: number;
@@ -35,7 +30,7 @@ export default function EditProjectPage() {
     fetchModelUrl: `/projects/${projectId}`,
   });
 
-  async function onSubmit(formData: z.infer<typeof updateProjectSchema>) {
+  async function onSubmit(formData: UpdateProjectSchema) {
     await submitForm(formData);
   }
 
@@ -43,18 +38,15 @@ export default function EditProjectPage() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
+          <FormFieldWrapper<UpdateProjectSchema>
             control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project name</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled={isLoading} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            formField={{
+              name: "name",
+              label: "Project name",
+              render: (field) => {
+                return <Input disabled={isLoading} {...field} />;
+              },
+            }}
           />
           <Button
             className="w-full mt-2"

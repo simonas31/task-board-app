@@ -42,10 +42,12 @@ export default function CreateProjectPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormFieldWrapper<CreateProjectSchema>
             control={form.control}
-            name="name"
-            label="Project name"
-            render={(field) => {
-              return <Input disabled={isLoading} {...field} />;
+            formField={{
+              name: "name",
+              label: "Project name",
+              render: (field) => {
+                return <Input disabled={isLoading} {...field} />;
+              },
             }}
           />
           <Button
