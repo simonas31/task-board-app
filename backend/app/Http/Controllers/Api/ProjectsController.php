@@ -19,6 +19,14 @@ class ProjectsController extends ApiController
         $this->authorizeResource(Project::class);
     }
 
+    protected function resourceMethodsWithoutModels(): array
+    {
+        return [
+            ...parent::resourceMethodsWithoutModels(),
+            'sidebarProjects' => 'sidebarProjects'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -31,7 +39,22 @@ class ProjectsController extends ApiController
             ->simplePaginate()
             ->withQueryString();
 
-        return $this->jsonResponse(compact('projects'));
+        return $this->jsonResponse($projects);
+    }
+
+    /**
+     * Projects list that belong to sidebar component
+     * @return JsonResponse
+     */
+    public function sidebarProjects(): JsonResponse
+    {
+        $projects = $this->accessService
+            ->projectsQuery()
+            ->with('boards')
+            ->orderBy('id')
+            ->get();
+
+        return $this->jsonResponse($projects);
     }
 
     /**

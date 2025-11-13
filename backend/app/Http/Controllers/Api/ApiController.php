@@ -78,9 +78,9 @@ abstract class ApiController
     protected function resourceMethodsWithoutModels(): array
     {
         return [
-            'index',
-            'create',
-            'store'
+            'index' => 'viewAny',
+            'create' => 'create',
+            'store' => 'create',
         ];
     }
 

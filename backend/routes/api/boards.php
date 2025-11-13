@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([
     'middleware' => 'jwt',
-    'prefix' => 'projects/{project}/'
+    'prefix' => 'projects/{project}'
 ], function () {
     Route::apiResource('boards', BoardsController::class);
 });

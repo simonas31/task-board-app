@@ -59,4 +59,9 @@ class ProjectPolicy
     {
         return true;
     }
+
+    public function sidebarProjects(User $user): bool
+    {
+        return $this->accessService->projectsQuery()->exists();
+    }
 }
