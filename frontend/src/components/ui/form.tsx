@@ -6,16 +6,14 @@ import {
   FormProvider,
   useFormContext,
   useFormState,
-  type Control,
   type ControllerProps,
-  type ControllerRenderProps,
   type FieldPath,
   type FieldValues,
-  type Path,
 } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import type { FormFieldWrapperProps } from "@/types/GenericForm.types";
 
 const Form = FormProvider;
 
@@ -157,28 +155,31 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-interface FormFieldWrapperProps<T extends FieldValues> {
-  name: Path<T>;
-  label: string;
-  render: (field: ControllerRenderProps<T>) => React.ReactElement;
-  control: Control<T>;
-  description?: string;
-}
-
 function FormFieldWrapper<T extends FieldValues>({
-  name,
-  label,
-  render: renderField,
+  formField,
   control,
-  description,
 }: FormFieldWrapperProps<T>) {
-  // create form field input that would accept any input type such as select, datepicker, textarea and so on..
+  const {
+    name,
+    label,
+    render: renderField,
+    description,
+    width = "full",
+  } = formField;
+
+  let widthClass = width;
+  if (width === "full") {
+    widthClass = "w-full";
+  } else if (width === "half") {
+    widthClass = "w-1/2";
+  }
+
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={cn(widthClass)}>
           <FormLabel>{label}</FormLabel>
           <FormControl>{renderField(field)}</FormControl>
           {description && <FormDescription>{description}</FormDescription>}
