@@ -105,6 +105,7 @@ export default function AppSidebar() {
 
   return (
     <Sidebar collapsible="offcanvas">
+      {/* SidebarHeader */}
       <SidebarContent>
         {data.groups.map((group) => {
           const isCollapsible =
@@ -117,6 +118,7 @@ export default function AppSidebar() {
           );
         })}
       </SidebarContent>
+      {/* SidebarFooter */}
     </Sidebar>
   );
 }
