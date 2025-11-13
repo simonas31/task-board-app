@@ -14,7 +14,7 @@ const BaseLayout = () => {
         <main className="w-full">
           <Header />
           <div className="m-3">
-            <Card className="container mx-auto">
+            <Card>
               <CardContent>
                 <Outlet />
               </CardContent>

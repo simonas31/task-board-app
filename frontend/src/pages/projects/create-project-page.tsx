@@ -53,12 +53,16 @@ export default function CreateProjectPage() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-2 max-w-4xl mx-auto"
+        >
           <FormFieldWrapper<CreateProjectSchema>
             control={form.control}
             formField={{
               name: "name",
               label: "Project name",
+              fieldLayout: "flex",
               render: () => {
                 return (
                   <Input {...form.register("name")} disabled={isLoading} />

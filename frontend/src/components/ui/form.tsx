@@ -164,26 +164,26 @@ function FormFieldWrapper<T extends FieldValues>({
     label,
     render: renderField,
     description,
-    width = "full",
+    fieldLayout = "static",
   } = formField;
 
-  let widthClass = width;
-  if (width === "full") {
-    widthClass = "w-full";
-  } else if (width === "half") {
-    widthClass = "w-1/2";
-  }
-
+  // if field layout is static do basic
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn(widthClass)}>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>{renderField(field)}</FormControl>
-          {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
+        <FormItem className={cn(fieldLayout === "flex" && "sm:flex")}>
+          <div
+            className={cn(fieldLayout === "flex" && "sm:flex sm:justify-end sm:flex-1")}
+          >
+            <FormLabel>{label}</FormLabel>
+          </div>
+          <div className={cn(fieldLayout === "flex" && "sm:flex-2")}>
+            <FormControl>{renderField(field)}</FormControl>
+            {description && <FormDescription>{description}</FormDescription>}
+            <FormMessage />
+          </div>
         </FormItem>
       )}
     />
