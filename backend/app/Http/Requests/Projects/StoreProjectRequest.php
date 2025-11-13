@@ -14,7 +14,14 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:projects,name'
+            'name' => 'required|string|unique:projects,name',
+            'boards' => 'nullable|array',
+            'boards.*.name' => 'required|string'
         ];
+    }
+
+    public function getBoards(): array | null
+    {
+        return $this->input("boards.*");
     }
 }

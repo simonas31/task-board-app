@@ -42,8 +42,13 @@ class ProjectsController extends ApiController
         /** @var User $user */
         $user = $request->user();
 
-        $project = Project::create($request->validated());
+        $project = Project::create($request->except("boards.*"));
         $user->projects()->attach($project->id);
+
+        $boardsData = $request->getBoards();
+        if ($boardsData) {
+            $project->boards()->createMany($boardsData);
+        }
 
         return $this->jsonResponse($project, 201);
     }
