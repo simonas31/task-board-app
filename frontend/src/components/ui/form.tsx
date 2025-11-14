@@ -167,7 +167,6 @@ function FormFieldWrapper<T extends FieldValues>({
     fieldLayout = "static",
   } = formField;
 
-  // if field layout is static do basic
   return (
     <FormField
       control={control}
@@ -175,7 +174,9 @@ function FormFieldWrapper<T extends FieldValues>({
       render={({ field }) => (
         <FormItem className={cn(fieldLayout === "flex" && "sm:flex")}>
           <div
-            className={cn(fieldLayout === "flex" && "sm:flex sm:justify-end sm:flex-1")}
+            className={cn(
+              fieldLayout === "flex" && "sm:flex sm:justify-end sm:flex-1"
+            )}
           >
             <FormLabel>{label}</FormLabel>
           </div>
