@@ -10,7 +10,14 @@ import useSWR from "swr";
 
 const projectFetcher = (url: string) => api.get(url).then((res) => res.data);
 
-export type KanbanProject = Project;
+type Board = {
+  id: number;
+  name: string;
+};
+
+export interface KanbanProject extends Project {
+  boards?: Board[];
+}
 
 export default function ViewProjectPage() {
   const { projectId } = useParams();
@@ -29,7 +36,7 @@ export default function ViewProjectPage() {
 
   return (
     <div className="space-y-5">
-      <ProjectHeader isLoading={isLoading} />
+      <ProjectHeader project={project} isLoading={isLoading} />
       <Separator />
       <KanbanBoard project={project} loadingProject={isLoading} />
     </div>
