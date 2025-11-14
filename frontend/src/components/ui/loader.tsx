@@ -6,9 +6,11 @@ const loaderVariants = cva("animate-spin", {
   variants: {
     size: {
       default: "size-6",
-      sm: "size-7",
-      md: "size-8",
-      lg: "size-9",
+      sm: "size-5",
+      lg: "size-7",
+      icon: "size-6",
+      "icon-sm": "size-5",
+      "icon-lg": "size-6",
     },
   },
   defaultVariants: {

@@ -58,7 +58,7 @@ function Button({
       disabled={isLoading || props.disabled}
       {...props}
     >
-      {isLoading ? <Loader /> : props.children}
+      {isLoading ? <Loader size={size} /> : props.children}
     </Comp>
   );
 }

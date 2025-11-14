@@ -19,10 +19,10 @@ const createProjectSchema = z.object({
     .optional(),
 });
 
-type Project = {
+export interface Project {
   id: number;
   name: string;
-};
+}
 
 type CreateProjectSchema = z.infer<typeof createProjectSchema>;
 

@@ -6,6 +6,7 @@ import BaseLayout from "./layouts/base-layout";
 import ListProjectsPage from "./pages/projects/list-projects-page";
 import CreateProjectPage from "./pages/projects/create-project-page";
 import EditProjectPage from "./pages/projects/edit-project-page";
+import ViewProjectPage from "./pages/projects/view-project-page";
 
 export const RoutesMap = () => {
   return (
@@ -20,6 +21,7 @@ export const RoutesMap = () => {
           <Route index path="/dashboard" />
           <Route path="/projects" element={<ListProjectsPage />} />
           <Route path="/projects/create" element={<CreateProjectPage />} />
+          <Route path="/projects/:projectId" element={<ViewProjectPage />} />
           <Route
             path="/projects/:projectId/edit"
             element={<EditProjectPage />}

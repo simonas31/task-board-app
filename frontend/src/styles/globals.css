@@ -184,3 +184,7 @@ small {
     font-weight: 400;
   }
 }
+
+.no-shadow {
+  box-shadow: none !important;
+}
