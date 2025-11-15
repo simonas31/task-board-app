@@ -1,23 +1,15 @@
 import KanbanBoard from "@/components/kanban-board";
-import { type Project } from "@/components/projects/create-project-form";
+import KanbanProvider from "@/components/kanban-board/context";
 import ProjectHeader from "@/components/projects/project-header";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/axios";
+import type { KanbanProject } from "@/types/KanbanProvider.types";
 import * as React from "react";
 import { useParams } from "react-router";
 import { toast } from "sonner";
 import useSWR from "swr";
 
 const projectFetcher = (url: string) => api.get(url).then((res) => res.data);
-
-type Board = {
-  id: number;
-  name: string;
-};
-
-export interface KanbanProject extends Project {
-  boards?: Board[];
-}
 
 export default function ViewProjectPage() {
   const { projectId } = useParams();
@@ -35,10 +27,12 @@ export default function ViewProjectPage() {
   }, [error]);
 
   return (
-    <div className="space-y-5">
-      <ProjectHeader project={project} isLoading={isLoading} />
-      <Separator />
-      <KanbanBoard project={project} loadingProject={isLoading} />
-    </div>
+    <KanbanProvider project={project} loadingProject={isLoading}>
+      <div className="space-y-5">
+        <ProjectHeader />
+        <Separator />
+        <KanbanBoard />
+      </div>
+    </KanbanProvider>
   );
 }

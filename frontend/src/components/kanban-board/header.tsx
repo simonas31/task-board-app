@@ -6,18 +6,12 @@ import {
   InputGroupInput,
 } from "../ui/input-group";
 import { Separator } from "../ui/separator";
-import type { KanbanProject } from "@/pages/projects/view-project-page";
 import CreateNewTaskButton from "./create-new-task";
+import useKanban from "@/hooks/use-kanban";
 
-type KanbanBoardHeaderProps = {
-  project?: KanbanProject;
-  loadingProject: boolean;
-};
+export default function KanbanBoardHeader() {
+  const { project, loadingProject } = useKanban();
 
-export default function KanbanBoardHeader({
-  project,
-  loadingProject,
-}: KanbanBoardHeaderProps) {
   return (
     <TabListContainer>
       <TabsList>

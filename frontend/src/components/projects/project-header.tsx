@@ -1,16 +1,10 @@
 import { FolderGit2, UserRoundPlus } from "lucide-react";
 import { Button } from "../ui/button";
-import type { KanbanProject } from "@/pages/projects/view-project-page";
+import useKanban from "@/hooks/use-kanban";
 
-type ProjectHeaderProps = {
-  project?: KanbanProject;
-  isLoading: boolean;
-};
+export default function ProjectHeader() {
+  const { project, loadingProject: isLoading } = useKanban();
 
-export default function ProjectHeader({
-  project,
-  isLoading,
-}: ProjectHeaderProps) {
   return (
     <div className="flex justify-between">
       <div className="flex justify-center items-center gap-5">
