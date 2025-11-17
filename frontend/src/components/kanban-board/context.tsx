@@ -66,27 +66,56 @@ export default function KanbanProvider({
     return board.tasks.filter((task) => task.status === stage);
   }, []);
 
-  const value = {
-    ...state,
-    loadingProject: isLoading,
-    getStageTasks,
+  const setActiveBoard = React.useCallback(
+    (board: Board) => dispatch({ type: "SET_ACTIVE_BOARD", payload: board }),
+    []
+  );
 
-    setActiveBoard: (board: Board) =>
-      dispatch({ type: "SET_ACTIVE_BOARD", payload: board }),
+  const setSelectedTask = React.useCallback(
+    (task: Task) => dispatch({ type: "SET_SELECTED_TASK", payload: task }),
+    []
+  );
 
-    setSelectedTask: (task: Task) =>
-      dispatch({ type: "SET_SELECTED_TASK", payload: task }),
-
-    addTask: (boardId: number, task: Task) =>
+  const addTask = React.useCallback(
+    (boardId: number, task: Task) =>
       dispatch({ type: "ADD_TASK", payload: { boardId, task } }),
+    []
+  );
 
-    updateTask: (boardId: number, task: Task) =>
+  const updateTask = React.useCallback(
+    (boardId: number, task: Task) =>
       dispatch({ type: "UPDATE_TASK", payload: { boardId, task } }),
+    []
+  );
 
-    deleteTask: (boardId: number, taskId: number) =>
+  const deleteTask = React.useCallback(
+    (boardId: number, taskId: number) =>
       dispatch({ type: "DELETE_TASK", payload: { boardId, taskId } }),
-  };
+    []
+  );
 
+  const value = React.useMemo(
+    () => ({
+      ...state,
+      loadingProject: isLoading,
+      getStageTasks,
+      setActiveBoard,
+      setSelectedTask,
+      addTask,
+      updateTask,
+      deleteTask,
+    }),
+    [
+      state,
+      isLoading,
+      getStageTasks,
+      setActiveBoard,
+      setSelectedTask,
+      addTask,
+      updateTask,
+      deleteTask,
+    ]
+  );
   return (
     <KanbanProviderContext.Provider {...props} value={value}>
       {children}
