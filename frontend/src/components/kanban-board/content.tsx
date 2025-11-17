@@ -1,19 +1,9 @@
 import { TabsContent } from "../ui/tabs";
 import useKanban from "@/hooks/use-kanban";
 import Stage from "./stage";
-import React from "react";
 
 export default function KanbanBoardContent() {
   const { project } = useKanban();
-
-  React.useEffect(() => {
-    project?.boards?.at(0)?.tasks.push({
-      id: 1,
-      title: "Temporary task",
-      description: "Lorem ipsum da lksoapf pfpp",
-      status: "Todo",
-    });
-  }, [project]);
 
   return (
     <div className="overflow-x-scroll">
