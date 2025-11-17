@@ -8,6 +8,7 @@ import type {
 type Action =
   | { type: "SET_PROJECT"; payload: KanbanProject }
   | { type: "SET_ACTIVE_BOARD"; payload: Board | null }
+  | { type: "SET_SELECTED_TASK"; payload: Task | null }
   | { type: "DELETE_BOARD"; payload: { boardId: number } }
   | { type: "ADD_TASK"; payload: { boardId: number; task: Task } }
   | { type: "UPDATE_TASK"; payload: { boardId: number; task: Task } }
@@ -20,6 +21,9 @@ export function kanbanReducer(state: KanbanState, action: Action) {
 
     case "SET_ACTIVE_BOARD":
       return { ...state, activeBoard: action.payload };
+
+    case "SET_SELECTED_TASK":
+      return { ...state, selectedTask: action.payload };
 
     case "DELETE_BOARD": {
       if (!state.project) return state;

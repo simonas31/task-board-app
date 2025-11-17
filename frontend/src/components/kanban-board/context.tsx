@@ -20,6 +20,8 @@ const initialState: KanbanState = {
   setProject: () => {},
   activeBoard: null,
   setActiveBoard: () => {},
+  selectedTask: null,
+  setSelectedTask: () => {},
   deleteBoard: () => {},
   addTask: () => {},
   updateTask: () => {},
@@ -47,16 +49,18 @@ export default function KanbanProvider({
   React.useEffect(() => {
     if (error) {
       toast.error("Could not fetch project. Please wait or try again");
-    } else if (project) {
-      dispatch({ type: "SET_PROJECT", payload: project });
-      if (project.boards?.length) {
-        dispatch({
-          type: "SET_ACTIVE_BOARD",
-          payload: project.boards?.at(0) ?? null,
-        });
-      }
+      return;
     }
-  }, [project, error]);
+
+    if (!project) return;
+
+    if (state.project?.id !== project.id) {
+      dispatch({ type: "SET_PROJECT", payload: project });
+
+      const firstBoard = project.boards?.[0] ?? null;
+      dispatch({ type: "SET_ACTIVE_BOARD", payload: firstBoard });
+    }
+  }, [error, project, state]);
 
   const getStageTasks = React.useCallback((board: Board, stage: TaskStatus) => {
     return board.tasks.filter((task) => task.status === stage);
@@ -69,6 +73,9 @@ export default function KanbanProvider({
 
     setActiveBoard: (board: Board) =>
       dispatch({ type: "SET_ACTIVE_BOARD", payload: board }),
+
+    setSelectedTask: (task: Task) =>
+      dispatch({ type: "SET_SELECTED_TASK", payload: task }),
 
     addTask: (boardId: number, task: Task) =>
       dispatch({ type: "ADD_TASK", payload: { boardId, task } }),

@@ -30,6 +30,8 @@ export type KanbanState = {
   setProject: () => void;
   activeBoard: Board | null;
   setActiveBoard: (board: Board) => void;
+  selectedTask: Task | null;
+  setSelectedTask: (task: Task) => void;
   deleteBoard: (boardId: number) => void;
   addTask: (boardId: number, task: Task) => void;
   updateTask: (boardId: number, task: Task) => void;
