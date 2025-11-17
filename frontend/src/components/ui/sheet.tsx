@@ -127,6 +127,15 @@ function SheetDescription({
   );
 }
 
+function HiddenHeader() {
+  return (
+    <SheetHeader hidden>
+      <SheetTitle />
+      <SheetDescription />
+    </SheetHeader>
+  );
+}
+
 export {
   Sheet,
   SheetTrigger,
@@ -136,4 +145,5 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
+  HiddenHeader,
 };

@@ -22,7 +22,7 @@ import {
 import { SheetClose } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import useGenericForm from "@/hooks/use-generic-form";
-import type { Task } from "@/types/KanbanProvider.types";
+import type { Board, Task } from "@/types/KanbanProvider.types";
 import type { Mode } from "@/types/UseGenericForm.types";
 import z from "zod";
 
@@ -39,16 +39,18 @@ type TaskFormSchema = z.infer<typeof taskFormSchema>;
 
 type TaskFormProps = {
   mode: Mode;
+  board?: Board;
 };
 
-export default function TaskForm({ mode }: TaskFormProps) {
+export default function TaskForm({ mode, board }: TaskFormProps) {
   const { form, submitForm, isLoading } = useGenericForm<
     Task,
     typeof taskFormSchema
   >({
     mode,
     schema: taskFormSchema,
-    mutateUrl: `/boards//tasks`,
+    mutateUrl: `/boards/${board?.id}/tasks`,
+    fetchModelUrl: `boards/${board?.id}/tasks`,
   });
 
   async function onSubmit(data: TaskFormSchema) {

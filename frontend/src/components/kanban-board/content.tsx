@@ -10,25 +10,14 @@ export default function KanbanBoardContent() {
       {project?.boards?.map((board) => {
         return (
           <TabsContent key={board.id} value={board.name} className="flex gap-3">
-            <Stage name="To-do" board={board} stage="Todo" />
+            <Stage name="To-do" stage="Todo" />
             <Stage
               name="In Progress"
-              board={board}
               stage="InProgress"
               indicatorColor="blue"
             />
-            <Stage
-              name="In Review"
-              board={board}
-              stage="InReview"
-              indicatorColor="yellow"
-            />
-            <Stage
-              name="Completed"
-              board={board}
-              stage="Completed"
-              indicatorColor="green"
-            />
+            <Stage name="In Review" stage="InReview" indicatorColor="yellow" />
+            <Stage name="Completed" stage="Completed" indicatorColor="green" />
           </TabsContent>
         );
       })}

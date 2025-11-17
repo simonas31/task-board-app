@@ -10,7 +10,7 @@ import CreateNewTaskButton from "./tasks/create-new-task";
 import useKanban from "@/hooks/use-kanban";
 
 export default function KanbanBoardHeader() {
-  const { project } = useKanban();
+  const { project, setActiveBoard } = useKanban();
 
   return (
     <TabListContainer>
@@ -20,6 +20,9 @@ export default function KanbanBoardHeader() {
             <TabsTrigger
               key={board.id}
               value={board.name}
+              onClick={() => {
+                setActiveBoard(board);
+              }}
               className="max-w-fit"
             >
               <KanbanSquareDashed />

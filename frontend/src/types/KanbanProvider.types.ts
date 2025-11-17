@@ -1,4 +1,5 @@
 import type { Project } from "@/components/projects/create-project-form";
+import type React from "react";
 import type { KeyedMutator } from "swr";
 
 export type TaskStatus = "Todo" | "InProgress" | "InReview" | "Completed";
@@ -28,6 +29,8 @@ export type KanbanState = {
   loadingProject: boolean;
   getStageTasks: (board: Board, stage: TaskStatus) => Task[];
   setProject: KeyedMutator<KanbanProject>;
+  activeBoard: Board | null;
+  setActiveBoard: React.Dispatch<React.SetStateAction<Board | null>>;
 };
 
 export type KanbanProviderProps = {

@@ -1,11 +1,16 @@
 import { Plus } from "lucide-react";
 import { Button } from "../../ui/button";
 import useKanban from "@/hooks/use-kanban";
-import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
+import {
+  HiddenHeader,
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "../../ui/sheet";
 import TaskForm from "./task-form";
 
 export default function CreateNewTaskButton() {
-  const { loadingProject } = useKanban();
+  const { loadingProject, activeBoard } = useKanban();
 
   return (
     <Sheet>
@@ -16,8 +21,9 @@ export default function CreateNewTaskButton() {
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full sm:min-w-[540px] px-5 py-3">
+        <HiddenHeader />
         <p className="text-2xl font-semibold">Create new task</p>
-        <TaskForm mode="Create" />
+        <TaskForm mode="Create" board={activeBoard} />
       </SheetContent>
     </Sheet>
   );

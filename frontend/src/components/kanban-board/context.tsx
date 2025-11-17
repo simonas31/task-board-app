@@ -15,6 +15,8 @@ const initialState: KanbanState = {
   loadingProject: false,
   getStageTasks: () => [],
   setProject: async () => undefined,
+  activeBoard: null,
+  setActiveBoard: () => {},
 };
 
 const KanbanProviderContext = React.createContext<KanbanState>(initialState);
@@ -26,6 +28,7 @@ export default function KanbanProvider({
   ...props
 }: KanbanProviderProps) {
   const { projectId } = useParams();
+  const [activeBoard, setActiveBoard] = React.useState<Board | null>(null);
 
   const {
     data: project,
@@ -49,6 +52,8 @@ export default function KanbanProvider({
     loadingProject: isLoading,
     getStageTasks,
     setProject: mutate,
+    activeBoard,
+    setActiveBoard,
   };
 
   return (
