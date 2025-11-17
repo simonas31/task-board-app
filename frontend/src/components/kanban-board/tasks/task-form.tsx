@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SheetClose } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import useGenericForm from "@/hooks/use-generic-form";
 import type { Task } from "@/types/KanbanProvider.types";
@@ -186,9 +187,11 @@ export default function TaskForm({ mode }: TaskFormProps) {
             </Field> */}
           </FieldSet>
           <div className="flex gap-2 mt-4 justify-end">
-            <Button variant="outline" type="button">
-              Cancel
-            </Button>
+            <SheetClose asChild>
+              <Button variant="outline" type="button">
+                Cancel
+              </Button>
+            </SheetClose>
             <Button>Create</Button>
           </div>
         </form>
