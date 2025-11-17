@@ -6,11 +6,11 @@ import {
   InputGroupInput,
 } from "../ui/input-group";
 import { Separator } from "../ui/separator";
-import CreateNewTaskButton from "./create-new-task";
+import CreateNewTaskButton from "./tasks/create-new-task";
 import useKanban from "@/hooks/use-kanban";
 
 export default function KanbanBoardHeader() {
-  const { project, loadingProject } = useKanban();
+  const { project } = useKanban();
 
   return (
     <TabListContainer>
@@ -36,10 +36,7 @@ export default function KanbanBoardHeader() {
           <InputGroupInput placeholder="Search ..." />
         </InputGroup>
         <Separator orientation="vertical" />
-        <CreateNewTaskButton
-          project={project}
-          loadingProject={loadingProject}
-        />
+        <CreateNewTaskButton />
       </div>
     </TabListContainer>
   );

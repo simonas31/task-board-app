@@ -1,5 +1,4 @@
-import * as React from "react";
-import Task from "./task";
+import Task from "../tasks";
 import type { Board, TaskStatus } from "@/types/KanbanProvider.types";
 import useKanban from "@/hooks/use-kanban";
 
@@ -13,7 +12,7 @@ export default function StageContent({ board, stage }: StageContentProps) {
   const tasks = getStageTasks(board, stage);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 py-5">
       {tasks.map((task) => (
         <Task key={task.id} task={task} />
       ))}

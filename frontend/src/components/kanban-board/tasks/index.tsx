@@ -1,7 +1,7 @@
 import { MessageCircle, Paperclip } from "lucide-react";
-import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
-import { Separator } from "../ui/separator";
-import { Badge } from "../ui/badge";
+import { Card, CardContent, CardFooter, CardHeader } from "../../ui/card";
+import { Separator } from "../../ui/separator";
+import { Badge } from "../../ui/badge";
 import type { Task } from "@/types/KanbanProvider.types";
 
 type TaskProps = {
@@ -10,7 +10,7 @@ type TaskProps = {
 
 export default function Task({ task }: TaskProps) {
   return (
-    <Card className="py-4 gap-2">
+    <Card className="py-4 gap-2 transition-all hover:scale-105">
       <CardHeader>
         <Badge>Dashoard</Badge>
       </CardHeader>

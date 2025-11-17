@@ -8,6 +8,7 @@ export type Task = {
   title: string;
   description?: string;
   status: TaskStatus;
+  dueDate: Date;
 };
 
 export type Board = {

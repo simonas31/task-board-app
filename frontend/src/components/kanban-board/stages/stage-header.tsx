@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import { Circle, Plus } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { Badge } from "../../ui/badge";
 
 type StageHeaderProps = {
   name: string;
@@ -29,7 +29,7 @@ export default function StageHeader({
   indicatorColor = "gray",
 }: StageHeaderProps) {
   return (
-    <div className="flex justify-between items-center rounded-xl bg-gray-200 py-2 px-3 mb-3">
+    <div className="flex justify-between items-center rounded-xl bg-gray-200 py-2 px-3">
       <div className="flex items-center gap-2">
         <Circle
           size={15}

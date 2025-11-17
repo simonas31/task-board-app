@@ -1,6 +1,6 @@
 import { TabsContent } from "../ui/tabs";
 import useKanban from "@/hooks/use-kanban";
-import Stage from "./stage";
+import Stage from "./stages";
 
 export default function KanbanBoardContent() {
   const { project } = useKanban();
