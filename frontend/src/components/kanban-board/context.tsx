@@ -60,7 +60,7 @@ export default function KanbanProvider({
       const firstBoard = project.boards?.[0] ?? null;
       dispatch({ type: "SET_ACTIVE_BOARD", payload: firstBoard });
     }
-  }, [error, project, state]);
+  }, [error, project, state.project?.id]);
 
   const getStageTasks = React.useCallback((board: Board, stage: TaskStatus) => {
     return board.tasks.filter((task) => task.status === stage);

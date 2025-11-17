@@ -14,7 +14,7 @@ type Action =
   | { type: "UPDATE_TASK"; payload: { boardId: number; task: Task } }
   | { type: "DELETE_TASK"; payload: { boardId: number; taskId: number } };
 
-export function kanbanReducer(state: KanbanState, action: Action) {
+export function kanbanReducer(state: KanbanState, action: Action): KanbanState {
   switch (action.type) {
     case "SET_PROJECT":
       return { ...state, project: action.payload };
@@ -27,72 +27,100 @@ export function kanbanReducer(state: KanbanState, action: Action) {
 
     case "DELETE_BOARD": {
       if (!state.project) return state;
-
       const { boardId } = action.payload;
+
+      const newBoards = state.project.boards?.filter((b) => b.id !== boardId);
+
+      const isActiveBoardDeleted = state.activeBoard?.id === boardId;
+      const newActiveBoard = isActiveBoardDeleted
+        ? newBoards?.[0] ?? null
+        : state.activeBoard;
 
       return {
         ...state,
+        activeBoard: newActiveBoard,
         project: {
           ...state.project,
-          boards: state.project?.boards?.filter((b) => b.id !== boardId),
+          boards: newBoards,
         },
       };
     }
 
     case "ADD_TASK": {
       if (!state.project) return state;
-
       const { boardId, task } = action.payload;
+
+      const newBoards = state.project.boards?.map((b) =>
+        b.id === boardId ? { ...b, tasks: [...b.tasks, task] } : b
+      );
+
+      const newActiveBoard =
+        state.activeBoard?.id === boardId
+          ? newBoards?.find((b) => b.id === boardId) ?? null
+          : state.activeBoard;
 
       return {
         ...state,
+        activeBoard: newActiveBoard,
         project: {
           ...state.project,
-          boards: state.project?.boards?.map((b) =>
-            b.id === boardId ? { ...b, tasks: [...b.tasks, task] } : b
-          ),
+          boards: newBoards,
         },
       };
     }
 
     case "UPDATE_TASK": {
       if (!state.project) return state;
-
       const { boardId, task } = action.payload;
+
+      const newBoards = state.project.boards?.map((b) =>
+        b.id === boardId
+          ? {
+              ...b,
+              tasks: b.tasks.map((t) => (t.id === task.id ? task : t)),
+            }
+          : b
+      );
+
+      const newActiveBoard =
+        state.activeBoard?.id === boardId
+          ? newBoards?.find((b) => b.id === boardId) ?? null
+          : state.activeBoard;
 
       return {
         ...state,
+        activeBoard: newActiveBoard,
         project: {
           ...state.project,
-          boards: state.project?.boards?.map((b) =>
-            b.id === boardId
-              ? {
-                  ...b,
-                  tasks: b.tasks.map((t) => (t.id === task.id ? task : t)),
-                }
-              : b
-          ),
+          boards: newBoards,
         },
       };
     }
 
     case "DELETE_TASK": {
       if (!state.project) return state;
-
       const { boardId, taskId } = action.payload;
+
+      const newBoards = state.project.boards?.map((b) =>
+        b.id === boardId
+          ? {
+              ...b,
+              tasks: b.tasks.filter((t) => t.id !== taskId),
+            }
+          : b
+      );
+
+      const newActiveBoard =
+        state.activeBoard?.id === boardId
+          ? newBoards?.find((b) => b.id === boardId) ?? null
+          : state.activeBoard;
 
       return {
         ...state,
+        activeBoard: newActiveBoard,
         project: {
           ...state.project,
-          boards: state.project?.boards?.map((b) =>
-            b.id === boardId
-              ? {
-                  ...b,
-                  tasks: b.tasks.filter((t) => t.id !== taskId),
-                }
-              : b
-          ),
+          boards: newBoards,
         },
       };
     }
