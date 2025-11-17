@@ -81,7 +81,7 @@ class ProjectsController extends ApiController
      */
     public function show(Project $project): JsonResponse
     {
-        $project->load(['boards']);
+        $project->load(['boards.tasks']);
         return $this->jsonResponse($project);
     }
 
