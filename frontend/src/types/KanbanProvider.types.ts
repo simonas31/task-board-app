@@ -9,6 +9,8 @@ export type Task = {
   description?: string;
   status: TaskStatus;
   dueDate: Date;
+  priority: string;
+  tags: number[];
 };
 
 export type Board = {

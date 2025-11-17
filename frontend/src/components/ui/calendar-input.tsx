@@ -27,13 +27,25 @@ function isValidDate(date: Date | undefined) {
 
 type CalendarInputProps = {
   name: string;
+  placeholder?: string;
+  onChange?: (value: Date) => void;
 };
 
-export default function CalendarInput({ name }: CalendarInputProps) {
+export default function CalendarInput({
+  name,
+  placeholder,
+  onChange,
+}: CalendarInputProps) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [month, setMonth] = React.useState<Date | undefined>(date);
   const [value, setValue] = React.useState(formatDate(date));
+
+  React.useEffect(() => {
+    if (onChange && date) {
+      onChange(date);
+    }
+  }, [date]);
 
   return (
     <div className="relative flex gap-2">
@@ -41,6 +53,7 @@ export default function CalendarInput({ name }: CalendarInputProps) {
         id={name}
         name={name}
         value={value}
+        placeholder={placeholder}
         className="bg-background pr-10"
         onChange={(e) => {
           const date = new Date(e.target.value);
@@ -48,6 +61,9 @@ export default function CalendarInput({ name }: CalendarInputProps) {
           if (isValidDate(date)) {
             setDate(date);
             setMonth(date);
+            if (onChange) {
+              onChange(date);
+            }
           }
         }}
         onClick={() => {
@@ -81,7 +97,6 @@ export default function CalendarInput({ name }: CalendarInputProps) {
         >
           <Calendar
             mode="single"
-            selected={date}
             captionLayout="dropdown"
             month={month}
             onMonthChange={setMonth}
@@ -89,6 +104,9 @@ export default function CalendarInput({ name }: CalendarInputProps) {
               setDate(date);
               setValue(formatDate(date));
               setOpen(false);
+              if (onChange && date) {
+                onChange(date);
+              }
             }}
           />
         </PopoverContent>
