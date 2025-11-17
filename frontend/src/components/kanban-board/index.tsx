@@ -16,7 +16,7 @@ export default function KanbanBoard() {
 
   return (
     <>
-      <Tabs value={activeBoard?.name}>
+      <Tabs value={activeBoard?.name ?? ""}>
         <KanbanBoardHeader />
         <KanbanBoardContent />
       </Tabs>
