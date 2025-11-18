@@ -103,7 +103,7 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 render: () => (
                   <Select
                     disabled={isLoading}
-                    value={task?.status || ""}
+                    value={task?.status}
                     onValueChange={(value) => {
                       form.setValue("status", value);
                     }}
