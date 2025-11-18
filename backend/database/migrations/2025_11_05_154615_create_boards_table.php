@@ -35,7 +35,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('board_id')->constrained('boards')->cascadeOnDelete();
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('status');
             $table->date("due_date")->nullable();
             $table->string('priority');

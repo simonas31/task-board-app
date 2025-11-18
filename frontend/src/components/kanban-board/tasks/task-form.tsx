@@ -54,10 +54,12 @@ const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
 
 export default function TaskForm({ mode }: TaskFormProps) {
   const { project, activeBoard: board, selectedTask } = useKanban();
-  const { form, submitForm, isLoading } = useGenericForm<
-    Task,
-    typeof taskFormSchema
-  >({
+  const {
+    form,
+    submitForm,
+    model: task,
+    isLoading,
+  } = useGenericForm<Task, typeof taskFormSchema>({
     mode,
     schema: taskFormSchema,
     mutateUrl: `projects/${project?.id}/boards/${board?.id}/tasks`,
@@ -100,6 +102,8 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 label: "Status",
                 render: () => (
                   <Select
+                    disabled={isLoading}
+                    value={task?.status || ""}
                     onValueChange={(value) => {
                       form.setValue("status", value);
                     }}
@@ -127,6 +131,11 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 render: () => (
                   <CalendarInput
                     {...form.register("dueDate")}
+                    dateValue={
+                      mode === "Update" && task?.dueDate
+                        ? new Date(task.dueDate)
+                        : undefined
+                    }
                     name="dueDate"
                     placeholder="Provide due date"
                     onChange={(value) => {

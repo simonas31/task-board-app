@@ -48,9 +48,19 @@ class Task extends Model
         return $this->belongsTo(Board::class);
     }
 
+    public function assigneesPivot(): HasMany
+    {
+        return $this->hasMany(TaskUser::class);
+    }
+
     public function assignees(): HasManyThrough
     {
         return $this->hasManyThrough(User::class, TaskUser::class);
+    }
+
+    public function tagsPivot(): HasMany
+    {
+        return $this->hasMany(TaskTag::class);
     }
 
     public function tags(): HasManyThrough

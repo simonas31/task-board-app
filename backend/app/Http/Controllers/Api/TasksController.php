@@ -31,7 +31,18 @@ class TasksController extends ApiController
      */
     public function store(StoreTaskRequest $request, Project $project, Board $board): JsonResponse
     {
-        $task = $board->tasks()->create($request->validated());
+        /** @var Task $task */
+        $task = $board->tasks()->create($request->except(['assignees', 'tags']));
+
+        $data = $request->only('assignees', 'tags');
+        if (!empty($data['assignees'])) {
+            $task->assigneesPivot()->createMany($data['assignees']);
+        }
+
+        if (!empty($data['tags'])) {
+            $task->tagsPivot()->createMany($data['tags']);
+        }
+
         return $this->jsonResponse($task, 201);
     }
 
@@ -48,7 +59,11 @@ class TasksController extends ApiController
      */
     public function update(UpdateTaskRequest $request, Project $project, Board $board, Task $task): JsonResponse
     {
-        $task->update($request->validated());
+        /** @var Task $task */
+        $task = $board->tasks()->create($request->except(['assignees', 'tags']));
+
+        // unassign tags, assginees...
+
         return $this->jsonResponse($task);
     }
 

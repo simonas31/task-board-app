@@ -6,7 +6,7 @@ export default function KanbanBoardContent() {
   const { project } = useKanban();
 
   return (
-    <div className="overflow-x-scroll">
+    <div className="overflow-x-scroll px-2">
       {project?.boards?.map((board) => {
         return (
           <TabsContent key={board.id} value={board.name} className="flex gap-3">

@@ -15,8 +15,12 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'status' => 'required|string',
+            'due_date' => 'nullable|date:Y-m-d',
+            'assignees' => 'nullable|array',
+            'priority' => 'required|string',
+            'tags' => 'nullable|array',
         ];
     }
 }
