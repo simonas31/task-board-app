@@ -37,7 +37,44 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('status');
+            $table->date("due_date")->nullable();
+            $table->string('priority');
             $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('task_user', function (Blueprint $table) {
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->timestamps();
+        });
+
+        Schema::create('task_tag', function (Blueprint $table) {
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->foreignId('tag_id')->constrained('tags')->cascadeOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('comments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->text('text');
+            $table->timestamps();
+        });
+
+        Schema::create('attachments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('file_path');
+            $table->string('mime_type');
             $table->timestamps();
         });
     }
@@ -50,5 +87,10 @@ return new class extends Migration
         Schema::dropIfExists('tasks');
         Schema::dropIfExists('boards');
         Schema::dropIfExists('projects');
+        Schema::dropIfExists('task_user');
+        Schema::dropIfExists('task_tag');
+        Schema::dropIfExists('tags');
+        Schema::dropIfExists('comments');
+        Schema::dropIfExists('attachments');
     }
 };
