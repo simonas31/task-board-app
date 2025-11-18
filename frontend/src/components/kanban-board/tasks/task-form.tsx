@@ -22,7 +22,8 @@ import {
 import { SheetClose } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import useGenericForm from "@/hooks/use-generic-form";
-import type { Board, Task } from "@/types/KanbanProvider.types";
+import useKanban from "@/hooks/use-kanban";
+import type { Task } from "@/types/KanbanProvider.types";
 import type { Mode } from "@/types/UseGenericForm.types";
 import z from "zod";
 
@@ -39,18 +40,18 @@ type TaskFormSchema = z.infer<typeof taskFormSchema>;
 
 type TaskFormProps = {
   mode: Mode;
-  board?: Board;
 };
 
-export default function TaskForm({ mode, board }: TaskFormProps) {
+export default function TaskForm({ mode }: TaskFormProps) {
+  const { project, activeBoard: board, selectedTask } = useKanban();
   const { form, submitForm, isLoading } = useGenericForm<
     Task,
     typeof taskFormSchema
   >({
     mode,
     schema: taskFormSchema,
-    mutateUrl: `/boards/${board?.id}/tasks`,
-    fetchModelUrl: `boards/${board?.id}/tasks`,
+    mutateUrl: `projects/${project?.id}/boards/${board?.id}/tasks`,
+    fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
   });
 
   async function onSubmit(data: TaskFormSchema) {
@@ -83,6 +84,7 @@ export default function TaskForm({ mode, board }: TaskFormProps) {
                 label: "Due date",
                 render: () => (
                   <CalendarInput
+                    {...form.register("dueDate")}
                     name="dueDate"
                     placeholder="Provide due date"
                     onChange={(value) => {
@@ -172,7 +174,7 @@ export default function TaskForm({ mode, board }: TaskFormProps) {
               formField={{
                 name: "description",
                 label: "Description",
-                render: () => <Textarea />,
+                render: () => <Textarea {...form.register("description")} />,
               }}
             />
             {/* <Field orientation="responsive">

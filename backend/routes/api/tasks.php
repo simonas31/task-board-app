@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([
     'middleware' => 'jwt',
-    'prefix' => 'boards/{board}'
+    'prefix' => 'projects/{project}/boards/{board}'
 ], function () {
     Route::apiResource('tasks', TasksController::class);
 });

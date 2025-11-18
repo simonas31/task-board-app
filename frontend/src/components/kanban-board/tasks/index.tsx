@@ -14,7 +14,7 @@ export default function Task({ task }: TaskProps) {
       <CardHeader>
         <Badge>Dashoard</Badge>
       </CardHeader>
-      <CardContent>
+      <CardContent className="text-left">
         <p className="text-xl font-semibold truncate">{task.title}</p>
         <p className="text-sm text-muted-foreground truncate">
           {task.description}

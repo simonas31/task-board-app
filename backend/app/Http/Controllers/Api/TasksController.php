@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Models\Board;
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 
@@ -18,7 +19,7 @@ class TasksController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index(Board $board): JsonResponse
+    public function index(Project $project, Board $board): JsonResponse
     {
         $tasks = $board->tasks()->get();
         return $this->jsonResponse(compact('tasks'));
@@ -28,7 +29,7 @@ class TasksController extends ApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request, Board $board): JsonResponse
+    public function store(StoreTaskRequest $request, Project $project, Board $board): JsonResponse
     {
         $task = $board->tasks()->create($request->validated());
         return $this->jsonResponse($task, 201);
@@ -37,7 +38,7 @@ class TasksController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(Task $task): JsonResponse
+    public function show(Project $project, Board $board, Task $task): JsonResponse
     {
         return $this->jsonResponse($task);
     }
@@ -45,7 +46,7 @@ class TasksController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
+    public function update(UpdateTaskRequest $request, Project $project, Board $board, Task $task): JsonResponse
     {
         $task->update($request->validated());
         return $this->jsonResponse($task);
@@ -54,13 +55,13 @@ class TasksController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task): JsonResponse
+    public function destroy(Project $project, Board $board, Task $task): JsonResponse
     {
         $task->delete();
         return $this->jsonResponse($task);
     }
 
-    public function forceDelete(Task $task): JsonResponse
+    public function forceDelete(Project $project, Board $board, Task $task): JsonResponse
     {
         $task->forceDelete();
         return $this->jsonResponse($task);
