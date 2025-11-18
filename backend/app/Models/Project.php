@@ -23,4 +23,10 @@ class Project extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    public function assignees(): BelongsToMany
+    {
+        return $this->users()
+            ->selectRaw("id, CONCAT(firstname, ' ', lastname) as full_name");
+    }
 }

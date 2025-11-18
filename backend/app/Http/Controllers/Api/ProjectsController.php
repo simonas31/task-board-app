@@ -23,7 +23,8 @@ class ProjectsController extends ApiController
     {
         return [
             ...parent::resourceMethodsWithoutModels(),
-            'sidebarProjects' => 'sidebarProjects'
+            'sidebarProjects' => 'sidebarProjects',
+            'projectAssignees' => 'projectAssignees'
         ];
     }
 
@@ -115,5 +116,15 @@ class ProjectsController extends ApiController
         $project->delete();
 
         return $this->jsonResponse($project);
+    }
+
+    public function projectAssignees(Project $project): JsonResponse
+    {
+        $assignees = $project
+            ->assignees()
+            ->get()
+            ->select(['id', 'full_name']);
+
+        return $this->jsonResponse($assignees);
     }
 }

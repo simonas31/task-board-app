@@ -56,4 +56,9 @@ class ProjectPolicy
     {
         return $this->accessService->projectsQuery()->exists();
     }
+
+    public function projectAssignees(User $user): bool
+    {
+        return $this->accessService->projectsQuery()->exists();
+    }
 }

@@ -22,8 +22,18 @@ class Task extends Model
         'title',
         'description',
         'status',
+        'due_date',
+        'priority',
         'deleted_at'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'due_date' => 'date:Y-m-d',
+            'deleted_at' => 'datetime:Y-m-d H:i:s',
+        ];
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

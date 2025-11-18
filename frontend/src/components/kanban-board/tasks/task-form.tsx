@@ -23,12 +23,15 @@ import { SheetClose } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import useGenericForm from "@/hooks/use-generic-form";
 import useKanban from "@/hooks/use-kanban";
+import { api } from "@/lib/axios";
 import type { Task } from "@/types/KanbanProvider.types";
 import type { Mode } from "@/types/UseGenericForm.types";
+import useSWR from "swr";
 import z from "zod";
 
 const taskFormSchema = z.object({
   title: z.string().min(1, "Task title is required"),
+  status: z.string().min(1, "Status is required"),
   description: z.string().optional(),
   dueDate: z.date({ message: "Due date is required" }),
   assignees: z.array(z.number()).optional(),
@@ -42,6 +45,13 @@ type TaskFormProps = {
   mode: Mode;
 };
 
+type Assignee = {
+  id: number;
+  fullName: string;
+};
+
+const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
+
 export default function TaskForm({ mode }: TaskFormProps) {
   const { project, activeBoard: board, selectedTask } = useKanban();
   const { form, submitForm, isLoading } = useGenericForm<
@@ -53,6 +63,12 @@ export default function TaskForm({ mode }: TaskFormProps) {
     mutateUrl: `projects/${project?.id}/boards/${board?.id}/tasks`,
     fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
   });
+
+  // fetch users assigned to this project
+  const { data: assignees, isLoading: loadingAssignees } = useSWR<Assignee[]>(
+    `projects/${project?.id}/assignees`,
+    assigneesFetcher
+  );
 
   async function onSubmit(data: TaskFormSchema) {
     await submitForm(data);
@@ -80,6 +96,32 @@ export default function TaskForm({ mode }: TaskFormProps) {
             <FormFieldWrapper<TaskFormSchema>
               control={form.control}
               formField={{
+                name: "status",
+                label: "Status",
+                render: () => (
+                  <Select
+                    onValueChange={(value) => {
+                      form.setValue("status", value);
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="Todo">To-do</SelectItem>
+                        <SelectItem value="InProgress">In Progress</SelectItem>
+                        <SelectItem value="InReview">In Review</SelectItem>
+                        <SelectItem value="Completed">Completed</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                ),
+              }}
+            />
+            <FormFieldWrapper<TaskFormSchema>
+              control={form.control}
+              formField={{
                 name: "dueDate",
                 label: "Due date",
                 render: () => (
@@ -101,21 +143,19 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 label: "Assignees",
                 render: () => (
                   <MultiSelect>
-                    <MultiSelectTrigger className="w-full hover:bg-inherit">
+                    <MultiSelectTrigger
+                      className="w-full hover:bg-inherit"
+                      disabled={loadingAssignees}
+                    >
                       <MultiSelectValue placeholder="Select assignees" />
                     </MultiSelectTrigger>
 
                     <MultiSelectContent>
-                      <MultiSelectGroup>
-                        <MultiSelectItem value="next.js">
-                          Next.js
+                      {assignees?.map((a) => (
+                        <MultiSelectItem key={a.id} value={String(a.id)}>
+                          {a.fullName}
                         </MultiSelectItem>
-                        <MultiSelectItem value="sveltekit">
-                          SvelteKit
-                        </MultiSelectItem>
-                        <MultiSelectItem value="astro">Astro</MultiSelectItem>
-                        <MultiSelectItem value="vue">Vue.js</MultiSelectItem>
-                      </MultiSelectGroup>
+                      ))}
                     </MultiSelectContent>
                   </MultiSelect>
                 ),
@@ -137,9 +177,9 @@ export default function TaskForm({ mode }: TaskFormProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="apple">Low</SelectItem>
-                        <SelectItem value="banana">Medium</SelectItem>
-                        <SelectItem value="blueberry">High</SelectItem>
+                        <SelectItem value="Low">Low</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="High">High</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -158,12 +198,7 @@ export default function TaskForm({ mode }: TaskFormProps) {
                     </MultiSelectTrigger>
 
                     <MultiSelectContent>
-                      <MultiSelectGroup>
-                        <MultiSelectItem value="1">Dashboard</MultiSelectItem>
-                        <MultiSelectItem value="2">Mobile app</MultiSelectItem>
-                        <MultiSelectItem value="3">Login</MultiSelectItem>
-                        <MultiSelectItem value="4">API</MultiSelectItem>
-                      </MultiSelectGroup>
+                      <MultiSelectGroup></MultiSelectGroup>
                     </MultiSelectContent>
                   </MultiSelect>
                 ),

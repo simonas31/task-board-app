@@ -12,4 +12,12 @@ Route::group(['middleware' => 'jwt'], function () {
     ], function () {
         Route::get('/sidebar/projects', 'sidebarProjects')->name('sidebar');
     });
+
+    Route::group([
+        'as' => 'projects.',
+        'prefix' => 'projects/{project}',
+        'controller' => ProjectsController::class
+    ], function () {
+        Route::get('/assignees', 'projectAssignees')->name('assignees');
+    });
 });
