@@ -19,10 +19,7 @@ function isValidDate(date: Date | undefined) {
   return !!date && !isNaN(date.getTime());
 }
 
-type CalendarInputProps = Omit<
-  React.ComponentProps<"input">,
-  "value" | "onChange"
-> & {
+type CalendarInputProps = Omit<React.ComponentProps<"input">, "onChange"> & {
   dateValue?: Date;
   onChange?: (value: Date) => void;
 };
@@ -33,17 +30,23 @@ export default function CalendarInput({
   ...props
 }: CalendarInputProps) {
   const [open, setOpen] = React.useState(false);
-  const [month, setMonth] = React.useState<Date | undefined>(dateValue);
-  const [inputValue, setInputValue] = React.useState(
-    formatDate(dateValue || new Date())
+  const [date, setDate] = React.useState<Date | undefined>(dateValue);
+  const [inputValue, setInputValue] = React.useState(formatDate(dateValue));
+
+  const changeDate = React.useCallback(
+    (date?: Date) => {
+      if (date && isValidDate(date)) {
+        setDate(date);
+        setInputValue(formatDate(date));
+        onChange?.(date);
+      }
+    },
+    [onChange]
   );
 
   React.useEffect(() => {
-    if (dateValue) {
-      setMonth(dateValue);
-      setInputValue(formatDate(dateValue));
-    }
-  }, [dateValue]);
+    changeDate(dateValue);
+  }, [dateValue, changeDate]);
 
   return (
     <div className="relative flex gap-2">
@@ -53,12 +56,7 @@ export default function CalendarInput({
         className="bg-background pr-10"
         onChange={(e) => {
           const parsed = new Date(e.target.value);
-          setInputValue(e.target.value);
-
-          if (isValidDate(parsed)) {
-            setMonth(parsed);
-            onChange?.(parsed);
-          }
+          changeDate(parsed);
         }}
         onClick={() => !open && setOpen(true)}
         onKeyDown={(e) => {
@@ -90,14 +88,10 @@ export default function CalendarInput({
           <Calendar
             mode="single"
             captionLayout="dropdown"
-            month={month}
-            onMonthChange={setMonth}
+            selected={date}
             onSelect={(selected) => {
-              setInputValue(formatDate(selected));
               setOpen(false);
-              if (selected) {
-                onChange?.(selected);
-              }
+              changeDate(selected);
             }}
           />
         </PopoverContent>

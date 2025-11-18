@@ -31,7 +31,7 @@ import z from "zod";
 
 const taskFormSchema = z.object({
   title: z.string().min(1, "Task title is required"),
-  status: z.string().min(1, "Status is required"),
+  status: z.string({ message: "Status is required" }).min(1),
   description: z.string().optional(),
   dueDate: z.date({ message: "Due date is required" }),
   assignees: z.array(z.number()).optional(),
@@ -73,7 +73,8 @@ export default function TaskForm({ mode }: TaskFormProps) {
   );
 
   async function onSubmit(data: TaskFormSchema) {
-    await submitForm(data);
+    console.log(data);
+    // await submitForm(data);
   }
 
   return (
