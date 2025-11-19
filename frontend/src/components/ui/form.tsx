@@ -9,6 +9,7 @@ import {
   type ControllerProps,
   type FieldPath,
   type FieldValues,
+  type Path,
 } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -155,10 +156,10 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-function FormFieldWrapper<T extends FieldValues>({
+function FormFieldWrapper<T extends FieldValues, N extends Path<T>>({
   formField,
   control,
-}: FormFieldWrapperProps<T>) {
+}: FormFieldWrapperProps<T, N>) {
   const {
     name,
     label,
@@ -171,7 +172,7 @@ function FormFieldWrapper<T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState, formState }) => (
         <FormItem className={cn(fieldLayout === "flex" && "sm:flex")}>
           <div
             className={cn(
@@ -181,7 +182,10 @@ function FormFieldWrapper<T extends FieldValues>({
             <FormLabel>{label}</FormLabel>
           </div>
           <div className={cn(fieldLayout === "flex" && "sm:flex-2")}>
-            <FormControl>{renderField(field)}</FormControl>
+            <FormControl>
+              {renderField({ field, fieldState, formState })}
+            </FormControl>
+
             {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />
           </div>

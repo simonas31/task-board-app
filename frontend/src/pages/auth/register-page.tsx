@@ -78,7 +78,7 @@ const RegisterPage = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormFieldWrapper<RegisterSchema>
+              <FormFieldWrapper
                 control={form.control}
                 formField={{
                   name: "firstname",
@@ -88,7 +88,7 @@ const RegisterPage = () => {
                   },
                 }}
               />
-              <FormFieldWrapper<RegisterSchema>
+              <FormFieldWrapper
                 control={form.control}
                 formField={{
                   name: "lastname",
@@ -98,7 +98,7 @@ const RegisterPage = () => {
                   },
                 }}
               />
-              <FormFieldWrapper<RegisterSchema>
+              <FormFieldWrapper
                 control={form.control}
                 formField={{
                   name: "email",
@@ -115,7 +115,7 @@ const RegisterPage = () => {
                   },
                 }}
               />
-              <FormFieldWrapper<RegisterSchema>
+              <FormFieldWrapper
                 control={form.control}
                 formField={{
                   name: "password",

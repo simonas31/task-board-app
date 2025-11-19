@@ -33,20 +33,16 @@ export default function CalendarInput({
   const [date, setDate] = React.useState<Date | undefined>(dateValue);
   const [inputValue, setInputValue] = React.useState(formatDate(dateValue));
 
-  const changeDate = React.useCallback(
-    (date?: Date) => {
-      if (date && isValidDate(date)) {
-        setDate(date);
-        setInputValue(formatDate(date));
-        onChange?.(date);
-      }
-    },
-    [onChange]
-  );
+  const changeDate = React.useCallback((date?: Date) => {
+    if (date && isValidDate(date)) {
+      setDate(date);
+      setInputValue(formatDate(date));
+    }
+  }, []);
 
   React.useEffect(() => {
     changeDate(dateValue);
-  }, [dateValue, changeDate]);
+  }, [dateValue]);
 
   return (
     <div className="relative flex gap-2">
@@ -92,6 +88,9 @@ export default function CalendarInput({
             onSelect={(selected) => {
               setOpen(false);
               changeDate(selected);
+              if (selected) {
+                onChange?.(selected);
+              }
             }}
           />
         </PopoverContent>

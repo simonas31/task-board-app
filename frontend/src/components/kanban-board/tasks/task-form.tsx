@@ -53,17 +53,27 @@ type Assignee = {
 const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
 
 export default function TaskForm({ mode }: TaskFormProps) {
-  const { project, activeBoard: board, selectedTask } = useKanban();
-  const {
-    form,
-    submitForm,
-    model: task,
-    isLoading,
-  } = useGenericForm<Task, typeof taskFormSchema>({
+  const { project, activeBoard: board, selectedTask, addTask } = useKanban();
+
+  const { form, submitForm, isLoading } = useGenericForm<
+    Task,
+    typeof taskFormSchema
+  >({
     mode,
     schema: taskFormSchema,
     mutateUrl: `projects/${project?.id}/boards/${board?.id}/tasks`,
     fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
+    useFormOptions: {
+      defaultValues: {
+        title: "",
+        status: "",
+        description: "",
+        dueDate: undefined,
+        assignees: [],
+        priority: "",
+        tags: [],
+      },
+    },
   });
 
   // fetch users assigned to this project
@@ -82,32 +92,31 @@ export default function TaskForm({ mode }: TaskFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldSet>
-            <FormFieldWrapper<TaskFormSchema>
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "title",
                 label: "Task title",
-                render: () => (
+                render: ({ field }) => (
                   <Input
-                    {...form.register("title")}
+                    {...field}
                     placeholder="Provide task title"
                     disabled={isLoading}
                   />
                 ),
               }}
             />
-            <FormFieldWrapper<TaskFormSchema>
+
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "status",
                 label: "Status",
-                render: () => (
+                render: ({ field }) => (
                   <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
                     disabled={isLoading}
-                    value={task?.status}
-                    onValueChange={(value) => {
-                      form.setValue("status", value);
-                    }}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select status" />
@@ -124,35 +133,34 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 ),
               }}
             />
-            <FormFieldWrapper<TaskFormSchema>
+
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "dueDate",
                 label: "Due date",
-                render: () => (
+                render: ({ field }) => (
                   <CalendarInput
-                    {...form.register("dueDate")}
-                    dateValue={
-                      mode === "Update" && task?.dueDate
-                        ? new Date(task.dueDate)
-                        : undefined
-                    }
-                    name="dueDate"
+                    dateValue={field.value}
+                    onChange={field.onChange}
                     placeholder="Provide due date"
-                    onChange={(value) => {
-                      form.setValue("dueDate", value);
-                    }}
                   />
                 ),
               }}
             />
-            <FormFieldWrapper<TaskFormSchema>
+
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "assignees",
                 label: "Assignees",
-                render: () => (
-                  <MultiSelect>
+                render: ({ field }) => (
+                  <MultiSelect
+                    values={field.value?.map(String)}
+                    onValuesChange={(values) =>
+                      field.onChange(values.map((v) => Number(v)))
+                    }
+                  >
                     <MultiSelectTrigger
                       className="w-full hover:bg-inherit"
                       disabled={loadingAssignees}
@@ -161,27 +169,26 @@ export default function TaskForm({ mode }: TaskFormProps) {
                     </MultiSelectTrigger>
 
                     <MultiSelectContent>
-                      {assignees?.map((a) => (
-                        <MultiSelectItem key={a.id} value={String(a.id)}>
-                          {a.fullName}
-                        </MultiSelectItem>
-                      ))}
+                      <MultiSelectGroup>
+                        {assignees?.map((a) => (
+                          <MultiSelectItem key={a.id} value={String(a.id)}>
+                            {a.fullName}
+                          </MultiSelectItem>
+                        ))}
+                      </MultiSelectGroup>
                     </MultiSelectContent>
                   </MultiSelect>
                 ),
               }}
             />
-            <FormFieldWrapper<TaskFormSchema>
+
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "priority",
                 label: "Priority",
-                render: () => (
-                  <Select
-                    onValueChange={(value) => {
-                      form.setValue("priority", value);
-                    }}
-                  >
+                render: ({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
@@ -196,30 +203,39 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 ),
               }}
             />
-            <FormFieldWrapper<TaskFormSchema>
+
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "tags",
                 label: "Tags",
-                render: () => (
-                  <MultiSelect>
+                render: ({ field }) => (
+                  <MultiSelect
+                    values={field.value?.map(String)}
+                    onValuesChange={(values) =>
+                      field.onChange(values.map((v) => Number(v)))
+                    }
+                  >
                     <MultiSelectTrigger className="w-full hover:bg-inherit">
                       <MultiSelectValue placeholder="Select tags" />
                     </MultiSelectTrigger>
 
                     <MultiSelectContent>
-                      <MultiSelectGroup></MultiSelectGroup>
+                      <MultiSelectGroup>
+                        {/* TODO: map tags here */}
+                      </MultiSelectGroup>
                     </MultiSelectContent>
                   </MultiSelect>
                 ),
               }}
             />
-            <FormFieldWrapper<TaskFormSchema>
+
+            <FormFieldWrapper
               control={form.control}
               formField={{
                 name: "description",
                 label: "Description",
-                render: () => <Textarea {...form.register("description")} />,
+                render: ({ field }) => <Textarea {...field} />,
               }}
             />
             {/* <Field orientation="responsive">

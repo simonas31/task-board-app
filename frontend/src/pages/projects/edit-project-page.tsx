@@ -38,13 +38,13 @@ export default function EditProjectPage() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormFieldWrapper<UpdateProjectSchema>
+          <FormFieldWrapper
             control={form.control}
             formField={{
               name: "name",
               label: "Project name",
-              render: (field) => {
-                return <Input disabled={isLoading} {...field} />;
+              render: ({ field }) => {
+                return <Input {...field} disabled={isLoading} />;
               },
             }}
           />

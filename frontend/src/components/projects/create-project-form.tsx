@@ -54,14 +54,14 @@ export default function CreateProjectForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-        <FormFieldWrapper<CreateProjectSchema>
+        <FormFieldWrapper
           control={form.control}
           formField={{
             name: "name",
             label: "Project name",
             fieldLayout: "flex",
-            render: () => {
-              return <Input {...form.register("name")} disabled={isLoading} />;
+            render: ({ field }) => {
+              return <Input {...field} disabled={isLoading} />;
             },
           }}
         />
@@ -74,17 +74,13 @@ export default function CreateProjectForm() {
                 <div className="flex flex-col gap-2">
                   <Card key={board.id}>
                     <CardContent>
-                      <FormFieldWrapper<CreateProjectSchema>
+                      <FormFieldWrapper
                         control={form.control}
                         formField={{
                           name: `boards.${index}.name`,
                           label: "Board name",
-                          render: () => {
-                            return (
-                              <Input
-                                {...form.register(`boards.${index}.name`)}
-                              />
-                            );
+                          render: ({ field }) => {
+                            return <Input {...field} />;
                           },
                         }}
                       />
