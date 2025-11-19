@@ -72,10 +72,20 @@ export default function useGenericForm<
     modes.isUpdating ? modelFetcher : null
   );
 
+  const parsedModel = React.useMemo(() => {
+    if (!model) return undefined;
+    try {
+      return schema.parse(model) as InputType;
+    } catch (err) {
+      console.error("Failed to parse model", err);
+      return model as unknown as InputType;
+    }
+  }, [model, schema]);
+
   // here should go types of schema in both Input and Output
   const form = useForm<InputType, unknown, OutputType>({
     resolver: zodResolver(schema),
-    values: model,
+    values: parsedModel,
     ...useFormOptions,
   });
 
@@ -90,7 +100,10 @@ export default function useGenericForm<
     modes.isUpdating ? updateFetcher : createFetcher
   );
 
-  const isLoading = loadingModel || loadingMutation;
+  const isLoading = React.useMemo(
+    () => loadingModel || loadingMutation,
+    [loadingModel, loadingMutation]
+  );
 
   // use React.useEffect to trigger rerender if submission was successful or not
 

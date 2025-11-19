@@ -5,23 +5,23 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Calendar } from "./calendar";
 import * as React from "react";
 
-function formatDate(date: Date | undefined) {
-  if (!date) return "";
-  return date.toLocaleDateString("en-EU", {
-    localeMatcher: "best fit",
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-  });
+function formatDate(date?: Date): string {
+  if (!date || isNaN(date.getTime())) return "";
+
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}`;
 }
 
-function isValidDate(date: Date | undefined) {
-  return !!date && !isNaN(date.getTime());
+function parseDate(str: string): Date | undefined {
+  const parsed = new Date(str);
+  return isNaN(parsed.getTime()) ? undefined : parsed;
 }
 
 type CalendarInputProps = Omit<React.ComponentProps<"input">, "onChange"> & {
   dateValue?: Date;
-  onChange?: (value: Date) => void;
+  onChange?: (value?: Date) => void;
 };
 
 export default function CalendarInput({
@@ -33,16 +33,32 @@ export default function CalendarInput({
   const [date, setDate] = React.useState<Date | undefined>(dateValue);
   const [inputValue, setInputValue] = React.useState(formatDate(dateValue));
 
-  const changeDate = React.useCallback((date?: Date) => {
-    if (date && isValidDate(date)) {
-      setDate(date);
-      setInputValue(formatDate(date));
-    }
-  }, []);
-
   React.useEffect(() => {
-    changeDate(dateValue);
+    setDate(dateValue);
+    setInputValue(formatDate(dateValue));
   }, [dateValue]);
+
+  const handleSelect = React.useCallback(
+    (selected?: Date) => {
+      setDate(selected);
+      setInputValue(formatDate(selected));
+      onChange?.(selected);
+      setOpen(false);
+    },
+    [onChange]
+  );
+
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setInputValue(value);
+
+      const parsed = parseDate(value);
+      setDate(parsed);
+      onChange?.(parsed);
+    },
+    [onChange]
+  );
 
   return (
     <div className="relative flex gap-2">
@@ -50,11 +66,7 @@ export default function CalendarInput({
         {...props}
         value={inputValue}
         className="bg-background pr-10"
-        onChange={(e) => {
-          const parsed = new Date(e.target.value);
-          changeDate(parsed);
-        }}
-        onClick={() => !open && setOpen(true)}
+        onChange={handleInputChange}
         onKeyDown={(e) => {
           if (e.key === "ArrowDown") {
             e.preventDefault();
@@ -85,13 +97,7 @@ export default function CalendarInput({
             mode="single"
             captionLayout="dropdown"
             selected={date}
-            onSelect={(selected) => {
-              setOpen(false);
-              changeDate(selected);
-              if (selected) {
-                onChange?.(selected);
-              }
-            }}
+            onSelect={handleSelect}
           />
         </PopoverContent>
       </Popover>

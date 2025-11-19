@@ -6,7 +6,7 @@ export type TaskStatus = "Todo" | "InProgress" | "InReview" | "Completed";
 export type Task = {
   id: number;
   title: string;
-  description?: string;
+  description?: string | null;
   status: TaskStatus;
   dueDate: Date;
   priority: string;

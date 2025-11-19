@@ -31,11 +31,25 @@ import z from "zod";
 
 const taskFormSchema = z.object({
   title: z.string().min(1, "Task title is required"),
-  status: z.string({ message: "Status is required" }).min(1),
-  description: z.string().optional(),
-  dueDate: z.date({ message: "Due date is required" }),
+  status: z.string().min(1, "Status is required"),
+  description: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => val ?? ""),
+  dueDate: z.preprocess(
+    (arg) => {
+      if (!arg) return undefined;
+      const date = new Date(arg as string);
+      return isNaN(date.getTime()) ? undefined : date;
+    },
+    z.date({
+      error: (iss) =>
+        iss.input === undefined ? "Due date is required" : "Invalid format",
+    })
+  ),
   assignees: z.array(z.number()).optional(),
-  priority: z.string().min(1),
+  priority: z.string().min(1, "Priority is required"),
   tags: z.array(z.number()).optional(),
 });
 
@@ -53,7 +67,13 @@ type Assignee = {
 const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
 
 export default function TaskForm({ mode }: TaskFormProps) {
-  const { project, activeBoard: board, selectedTask, addTask } = useKanban();
+  const {
+    project,
+    activeBoard: board,
+    selectedTask,
+    addTask,
+    updateTask,
+  } = useKanban();
 
   const { form, submitForm, isLoading } = useGenericForm<
     Task,
@@ -61,7 +81,9 @@ export default function TaskForm({ mode }: TaskFormProps) {
   >({
     mode,
     schema: taskFormSchema,
-    mutateUrl: `projects/${project?.id}/boards/${board?.id}/tasks`,
+    mutateUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${
+      selectedTask?.id ?? ""
+    }`,
     fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
     useFormOptions: {
       defaultValues: {
@@ -83,10 +105,12 @@ export default function TaskForm({ mode }: TaskFormProps) {
   );
 
   async function onSubmit(data: TaskFormSchema) {
-    const createdTask = await submitForm(data);
+    const mutatedTask = await submitForm(data);
 
-    if (createdTask && board) {
-      addTask(board.id, createdTask);
+    if (mode === "Create" && mutatedTask && board) {
+      addTask(board.id, mutatedTask);
+    } else if (mode === "Update" && mutatedTask && board) {
+      updateTask(board.id, mutatedTask);
     }
   }
 
@@ -142,13 +166,15 @@ export default function TaskForm({ mode }: TaskFormProps) {
               formField={{
                 name: "dueDate",
                 label: "Due date",
-                render: ({ field }) => (
-                  <CalendarInput
-                    dateValue={field.value}
-                    onChange={field.onChange}
-                    placeholder="Provide due date"
-                  />
-                ),
+                render: ({ field }) => {
+                  return (
+                    <CalendarInput
+                      dateValue={field.value as Date | undefined}
+                      onChange={field.onChange}
+                      placeholder="Provide due date"
+                    />
+                  );
+                },
               }}
             />
 
@@ -238,7 +264,9 @@ export default function TaskForm({ mode }: TaskFormProps) {
               formField={{
                 name: "description",
                 label: "Description",
-                render: ({ field }) => <Textarea {...field} />,
+                render: ({ field }) => (
+                  <Textarea {...field} value={field.value ?? ""} />
+                ),
               }}
             />
             {/* <Field orientation="responsive">
@@ -260,7 +288,7 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 Cancel
               </Button>
             </SheetClose>
-            <Button>Create</Button>
+            <Button>{mode === "Create" ? "Create" : "Update"}</Button>
           </div>
         </form>
       </Form>
