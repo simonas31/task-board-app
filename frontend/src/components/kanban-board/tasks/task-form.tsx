@@ -131,7 +131,6 @@ export default function TaskForm({ mode }: TaskFormProps) {
   );
 
   React.useEffect(() => {
-    console.log(deleted, board, selectedTask);
     if (deleted && board && selectedTask) {
       deleteTask(board.id, selectedTask.id);
     }
