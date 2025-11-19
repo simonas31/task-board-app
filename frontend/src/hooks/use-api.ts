@@ -28,6 +28,7 @@ export default function useApi<T, B = unknown>(
       try {
         const res = await fetcher(url, body);
         setState({ data: res.data, isLoading: false, error: null });
+        return res.data;
       } catch (err) {
         let error = "Something went wrong";
         if (err instanceof AxiosError && err.response?.status === 422) {
@@ -39,6 +40,8 @@ export default function useApi<T, B = unknown>(
           isLoading: false,
           error: error,
         });
+
+        return null;
       }
     },
     [url, fetcher]

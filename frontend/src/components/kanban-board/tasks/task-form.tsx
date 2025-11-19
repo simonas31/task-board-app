@@ -83,8 +83,11 @@ export default function TaskForm({ mode }: TaskFormProps) {
   );
 
   async function onSubmit(data: TaskFormSchema) {
-    console.log(data);
-    // await submitForm(data);
+    const createdTask = await submitForm(data);
+
+    if (createdTask && board) {
+      addTask(board.id, createdTask);
+    }
   }
 
   return (

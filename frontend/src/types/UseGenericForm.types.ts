@@ -11,7 +11,7 @@ export interface UseGenericFormReturn<
   model?: TModel;
   isLoading: boolean;
   mutationError: AxiosError | string | null;
-  submitForm: (body?: TInput | undefined) => Promise<void>;
+  submitForm: (body?: TInput | undefined) => Promise<TModel | null>;
 }
 
 export type Mode = "Create" | "Update";
