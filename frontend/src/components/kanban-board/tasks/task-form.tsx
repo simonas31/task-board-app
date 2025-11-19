@@ -21,11 +21,14 @@ import {
 } from "@/components/ui/select";
 import { SheetClose } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import useApi from "@/hooks/use-api";
 import useGenericForm from "@/hooks/use-generic-form";
 import useKanban from "@/hooks/use-kanban";
 import { api } from "@/lib/axios";
+import { cn } from "@/lib/utils";
 import type { Task } from "@/types/KanbanProvider.types";
 import type { Mode } from "@/types/UseGenericForm.types";
+import * as React from "react";
 import useSWR from "swr";
 import z from "zod";
 
@@ -66,6 +69,9 @@ type Assignee = {
 
 const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
 
+const deleteTaskFetcher = (url: string) =>
+  api.delete(url).then((res) => res.data);
+
 export default function TaskForm({ mode }: TaskFormProps) {
   const {
     project,
@@ -73,6 +79,7 @@ export default function TaskForm({ mode }: TaskFormProps) {
     selectedTask,
     addTask,
     updateTask,
+    deleteTask,
   } = useKanban();
 
   const { form, submitForm, isLoading } = useGenericForm<
@@ -105,14 +112,30 @@ export default function TaskForm({ mode }: TaskFormProps) {
   );
 
   async function onSubmit(data: TaskFormSchema) {
-    const mutatedTask = await submitForm(data);
+    const saved = await submitForm(data);
+    if (!saved || !board) return;
 
-    if (mode === "Create" && mutatedTask && board) {
-      addTask(board.id, mutatedTask);
-    } else if (mode === "Update" && mutatedTask && board) {
-      updateTask(board.id, mutatedTask);
-    }
+    if (mode === "Create") addTask(board.id, saved);
+    if (mode === "Update") updateTask(board.id, saved);
   }
+
+  const {
+    data: deleted,
+    execute: deleteRequest,
+    isLoading: deleting,
+  } = useApi<Task>(
+    mode === "Update"
+      ? `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`
+      : "",
+    deleteTaskFetcher
+  );
+
+  React.useEffect(() => {
+    console.log(deleted, board, selectedTask);
+    if (deleted && board && selectedTask) {
+      deleteTask(board.id, selectedTask.id);
+    }
+  }, [deleted, board, selectedTask, deleteTask]);
 
   return (
     <>
@@ -139,13 +162,12 @@ export default function TaskForm({ mode }: TaskFormProps) {
               formField={{
                 name: "status",
                 label: "Status",
-                render: ({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger className="w-full">
+                render: ({ field, fieldState }) => (
+                  <Select {...field} value={field.value} disabled={isLoading}>
+                    <SelectTrigger
+                      className="w-full"
+                      aria-invalid={fieldState.invalid}
+                    >
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -217,7 +239,7 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 name: "priority",
                 label: "Priority",
                 render: ({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select {...field} value={field.value}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
@@ -282,13 +304,36 @@ export default function TaskForm({ mode }: TaskFormProps) {
               Select
             </Field> */}
           </FieldSet>
-          <div className="flex gap-2 mt-4 justify-end">
-            <SheetClose asChild>
-              <Button variant="outline" type="button">
-                Cancel
+          <div
+            className={cn(
+              "flex mt-4",
+              mode === "Create" ? "justify-end" : "justify-between"
+            )}
+          >
+            {mode === "Update" && (
+              <Button
+                type="button"
+                variant="destructive"
+                isLoading={isLoading || deleting}
+                onClick={() => deleteRequest()}
+              >
+                Delete
               </Button>
-            </SheetClose>
-            <Button>{mode === "Create" ? "Create" : "Update"}</Button>
+            )}
+            <div className="flex gap-2">
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  type="button"
+                  isLoading={isLoading || deleting}
+                >
+                  Cancel
+                </Button>
+              </SheetClose>
+              <Button isLoading={isLoading || deleting}>
+                {mode === "Create" ? "Create" : "Update"}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

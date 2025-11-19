@@ -116,6 +116,7 @@ export default function KanbanProvider({
       deleteTask,
     ]
   );
+
   return (
     <KanbanProviderContext.Provider {...props} value={value}>
       {children}

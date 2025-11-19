@@ -60,7 +60,7 @@ class TasksController extends ApiController
     public function update(UpdateTaskRequest $request, Project $project, Board $board, Task $task): JsonResponse
     {
         /** @var Task $task */
-        $task = $board->tasks()->create($request->except(['assignees', 'tags']));
+        $task = $task->update($request->except(['assignees', 'tags']));
 
         // unassign tags, assginees...
 
@@ -73,12 +73,14 @@ class TasksController extends ApiController
     public function destroy(Project $project, Board $board, Task $task): JsonResponse
     {
         $task->delete();
+        // unassign tags, assginees...
         return $this->jsonResponse($task);
     }
 
     public function forceDelete(Project $project, Board $board, Task $task): JsonResponse
     {
         $task->forceDelete();
+        // unassign tags, assginees...
         return $this->jsonResponse($task);
     }
 }
