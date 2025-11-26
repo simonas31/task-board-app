@@ -23,7 +23,8 @@ function getModes(mode: Mode) {
 
 export default function useGenericForm<
   TModel extends input<TSchema>,
-  TSchema extends ZodObject<{ [key: string]: z.ZodType }>
+  TSchema extends ZodObject<{ [key: string]: z.ZodType }>,
+  TReturnModel = TModel
 >({
   mode,
   schema,
@@ -35,7 +36,8 @@ export default function useGenericForm<
 }: UseGenericFormProps<TSchema>): UseGenericFormReturn<
   TModel,
   input<TSchema>,
-  output<TSchema>
+  output<TSchema>,
+  TReturnModel
 > {
   if (mode === "Update" && typeof fetchModelUrl === "undefined") {
     throw new Error("'fetchModelUrl' is missing in hook properties");
@@ -58,7 +60,7 @@ export default function useGenericForm<
   );
 
   const modelFetcher = React.useCallback(
-    (url: string) => api.get<TModel>(url).then((res) => res.data),
+    (url: string) => api.get<TReturnModel>(url).then((res) => res.data),
     []
   );
 
@@ -67,7 +69,7 @@ export default function useGenericForm<
     data: model,
     isLoading: loadingModel,
     error: modelError,
-  } = useSWR<TModel>(
+  } = useSWR<TReturnModel>(
     modes.isUpdating ? fetchModelUrl : null,
     modes.isUpdating ? modelFetcher : null
   );
@@ -95,7 +97,7 @@ export default function useGenericForm<
     isLoading: loadingMutation,
     data: mutationData,
     error: mutationError,
-  } = useApi<TModel, InputType>(
+  } = useApi<TReturnModel, InputType>(
     mutateUrl,
     modes.isUpdating ? updateFetcher : createFetcher
   );

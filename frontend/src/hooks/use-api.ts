@@ -8,6 +8,7 @@ type ApiUseState<T> = {
 };
 
 interface FetcherType<T, B = unknown> {
+  (url: string): Promise<AxiosResponse<T>>;
   (url: string, body?: B): Promise<AxiosResponse<T>>;
 }
 

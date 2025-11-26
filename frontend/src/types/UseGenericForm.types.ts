@@ -5,13 +5,14 @@ import type { input, output, ZodObject, ZodRawShape } from "zod";
 export interface UseGenericFormReturn<
   TModel,
   TInput extends FieldValues,
-  TOutput extends FieldValues
+  TOutput extends FieldValues,
+  TReturnModel = TModel
 > {
   form: UseFormReturn<TInput, unknown, TOutput>;
-  model?: TModel;
+  model?: TReturnModel;
   isLoading: boolean;
   mutationError: AxiosError | string | null;
-  submitForm: (body?: TInput | undefined) => Promise<TModel | null>;
+  submitForm: (body?: TInput | undefined) => Promise<TReturnModel | null>;
 }
 
 export type Mode = "Create" | "Update";
