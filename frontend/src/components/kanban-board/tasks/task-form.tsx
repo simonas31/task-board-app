@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import CalendarInput from "@/components/ui/calendar-input";
 import { FieldSet } from "@/components/ui/field";
 import { Form, FormFieldWrapper } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -33,33 +32,20 @@ import useSWR from "swr";
 import z from "zod";
 
 const taskFormSchema = z.object({
-  title: z.string().min(1, "Task title is required"),
-  status: z.string().min(1, "Status is required"),
-  description: z
-    .string()
-    .optional()
-    .nullable()
-    .transform((val) => val ?? ""),
-  dueDate: z.preprocess(
-    (arg) => {
-      if (!arg) return undefined;
-      const date = new Date(arg as string);
-      return isNaN(date.getTime()) ? undefined : date;
-    },
-    z.date({
-      error: (iss) =>
-        iss.input === undefined ? "Due date is required" : "Invalid format",
-    })
-  ),
-  assignees: z.array(z.number()).optional(),
-  priority: z.string().min(1, "Priority is required"),
-  tags: z.array(z.number()).optional(),
+  title: z.string().min(1, "Task title is required").default(""),
+  status: z.string().min(1, "Status is required").default(""),
+  description: z.string().optional().nullable().default(""),
+  dueDate: z.iso.date().default(""),
+  assignees: z.array(z.number()).optional().default([]),
+  priority: z.string().min(1, "Priority is required").default(""),
+  tags: z.array(z.number()).optional().default([]),
 });
 
 type TaskFormSchema = z.infer<typeof taskFormSchema>;
 
 type TaskFormProps = {
   mode: Mode;
+  closeSheet: () => void;
 };
 
 type Assignee = {
@@ -69,10 +55,9 @@ type Assignee = {
 
 const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
 
-const deleteTaskFetcher = (url: string) =>
-  api.delete(url).then((res) => res.data);
+const deleteTaskFetcher = (url: string) => api.delete(url);
 
-export default function TaskForm({ mode }: TaskFormProps) {
+export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
   const {
     project,
     activeBoard: board,
@@ -93,15 +78,7 @@ export default function TaskForm({ mode }: TaskFormProps) {
     }`,
     fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
     useFormOptions: {
-      defaultValues: {
-        title: "",
-        status: "",
-        description: "",
-        dueDate: undefined,
-        assignees: [],
-        priority: "",
-        tags: [],
-      },
+      defaultValues: mode === "Create" ? taskFormSchema.parse({}) : undefined,
     },
   });
 
@@ -130,11 +107,19 @@ export default function TaskForm({ mode }: TaskFormProps) {
     deleteTaskFetcher
   );
 
+  const hasDeletedRef = React.useRef(false);
+
   React.useEffect(() => {
-    if (deleted && board && selectedTask) {
+    if (!deleted) return;
+    if (hasDeletedRef.current) return;
+
+    hasDeletedRef.current = true;
+
+    if (board?.id && selectedTask?.id) {
       deleteTask(board.id, selectedTask.id);
+      closeSheet();
     }
-  }, [deleted, board, selectedTask, deleteTask]);
+  }, [deleted]);
 
   return (
     <>
@@ -162,12 +147,20 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 name: "status",
                 label: "Status",
                 render: ({ field, fieldState }) => (
-                  <Select {...field} value={field.value} disabled={isLoading}>
+                  <Select
+                    {...field}
+                    value={field.value ?? ""}
+                    onValueChange={field.onChange}
+                    disabled={isLoading}
+                  >
                     <SelectTrigger
                       className="w-full"
                       aria-invalid={fieldState.invalid}
                     >
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue
+                        placeholder="Select status"
+                        defaultValue={field.value}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -189,11 +182,12 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 label: "Due date",
                 render: ({ field }) => {
                   return (
-                    <CalendarInput
-                      dateValue={field.value as Date | undefined}
-                      onChange={field.onChange}
-                      placeholder="Provide due date"
-                    />
+                    // <CalendarInput
+                    //   dateValue={field.value}
+                    //   onChange={field.onChange}
+                    //   placeholder="Provide due date"
+                    // />
+                    <Input {...field} />
                   );
                 },
               }}
@@ -238,7 +232,11 @@ export default function TaskForm({ mode }: TaskFormProps) {
                 name: "priority",
                 label: "Priority",
                 render: ({ field }) => (
-                  <Select {...field} value={field.value}>
+                  <Select
+                    {...field}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>

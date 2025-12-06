@@ -36,11 +36,13 @@ class TasksController extends ApiController
 
         $data = $request->only('assignees', 'tags');
         if (!empty($data['assignees'])) {
-            $task->assigneesPivot()->createMany($data['assignees']);
+            $assigneeIds = array_map(fn($id) => ['assignee_id' => $id], $data['assignees']);
+            $task->assigneesPivot()->createMany($assigneeIds);
         }
 
         if (!empty($data['tags'])) {
-            $task->tagsPivot()->createMany($data['tags']);
+            $tagIds = array_map(fn($id) => ['tag_id' => $id], $data['tags']);
+            $task->tagsPivot()->createMany($tagIds);
         }
 
         return $this->jsonResponse($task, 201);
@@ -60,8 +62,7 @@ class TasksController extends ApiController
     public function update(UpdateTaskRequest $request, Project $project, Board $board, Task $task): JsonResponse
     {
         /** @var Task $task */
-        $task = $task->update($request->except(['assignees', 'tags']));
-
+        $task->update($request->except(['assignees', 'tags']));
         // unassign tags, assginees...
 
         return $this->jsonResponse($task);

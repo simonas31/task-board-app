@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends ApiController
@@ -89,9 +90,13 @@ class AuthController extends ApiController
             return $this->jsonResponse(['error' => 'Refresh token is missing'], 401);
         }
 
-        $user = auth()->setToken($refreshToken)->userOrFail();
-        $accessToken = auth()->tokenById($user->id);
-        $accessTokenTTL = auth()->factory()->getTTL();
+        if (!$user = auth()->user()) {
+            return $this->jsonResponse(['error' => 'User not found'], 401);
+        }
+
+        $user = $user->setToken($refreshToken);
+        $accessToken = $user->tokenById($user->id);
+        $accessTokenTTL = $user->factory()->getTTL();
 
         return $this->jsonResponse([
             'accessToken' => $accessToken,

@@ -56,6 +56,10 @@ const LoginPage = () => {
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   async function onSubmit(data: LoginSchema) {
@@ -76,12 +80,12 @@ const LoginPage = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormFieldWrapper<LoginSchema>
+              <FormFieldWrapper
                 control={form.control}
                 formField={{
                   name: "email",
                   label: "Email",
-                  render: (field) => {
+                  render: ({ field }) => {
                     return (
                       <InputGroup>
                         <InputGroupInput disabled={isLoading} {...field} />
@@ -93,12 +97,12 @@ const LoginPage = () => {
                   },
                 }}
               />
-              <FormFieldWrapper<LoginSchema>
+              <FormFieldWrapper
                 control={form.control}
                 formField={{
                   name: "password",
                   label: "Password",
-                  render: (field) => {
+                  render: ({ field }) => {
                     return (
                       <InputGroup>
                         <InputGroupInput

@@ -1,18 +1,17 @@
 import type { AxiosError } from "axios";
 import type { FieldValues, UseFormProps, UseFormReturn } from "react-hook-form";
-import type { input, output, ZodObject, ZodRawShape } from "zod";
+import type { output, ZodObject, ZodRawShape } from "zod";
 
 export interface UseGenericFormReturn<
   TModel,
-  TInput extends FieldValues,
   TOutput extends FieldValues,
   TReturnModel = TModel
 > {
-  form: UseFormReturn<TInput, unknown, TOutput>;
+  form: UseFormReturn<TOutput, unknown, TOutput>;
   model?: TReturnModel;
   isLoading: boolean;
   mutationError: AxiosError | string | null;
-  submitForm: (body?: TInput | undefined) => Promise<TReturnModel | null>;
+  submitForm: (body?: TOutput | undefined) => Promise<TReturnModel | null>;
 }
 
 export type Mode = "Create" | "Update";
@@ -24,5 +23,5 @@ export interface UseGenericFormProps<TSchema extends ZodObject<ZodRawShape>> {
   fetchModelUrl?: string;
   onSuccess?: () => void;
   onError?: () => void;
-  useFormOptions?: UseFormProps<input<TSchema>, unknown, output<TSchema>>;
+  useFormOptions?: UseFormProps<output<TSchema>, unknown, output<TSchema>>;
 }

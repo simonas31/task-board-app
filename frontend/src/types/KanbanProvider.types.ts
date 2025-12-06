@@ -6,11 +6,12 @@ export type TaskStatus = "Todo" | "InProgress" | "InReview" | "Completed";
 export type Task = {
   id: number;
   title: string;
-  description?: string | null;
+  description: string | null;
   status: TaskStatus;
   dueDate: Date;
   priority: string;
   tags: number[];
+  assignees: number[];
 };
 
 export type Board = {
