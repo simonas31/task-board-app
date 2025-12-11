@@ -8,7 +8,12 @@ import type {
 
 import { api } from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type FieldValues, type Resolver } from "react-hook-form";
+import {
+  useForm,
+  type DefaultValues,
+  type FieldValues,
+  type Resolver,
+} from "react-hook-form";
 import useApi from "./use-api";
 import useSWR from "swr";
 import * as React from "react";
@@ -67,6 +72,7 @@ export default function useGenericForm<
     data: model,
     isLoading: loadingModel,
     error: modelError,
+    isValidating,
   } = useSWR<TReturnModel>(
     modes.isUpdating ? fetchModelUrl : null,
     modes.isUpdating ? modelFetcher : null
@@ -80,14 +86,23 @@ export default function useGenericForm<
       console.error("Failed to parse model", err);
       return model as unknown as OutputType;
     }
-  }, [model, schema]);
+  }, [model]);
 
   // here should go types of schema in both Input and Output
   const form = useForm<OutputType, unknown, OutputType>({
     resolver: zodResolver(schema) as Resolver<OutputType>,
-    values: parsedModel,
+    defaultValues: schema.parse({}) as DefaultValues<OutputType>,
     ...useFormOptions,
   });
+
+  React.useEffect(() => {
+    if (modes.isCreating) {
+      form.reset(schema.parse({}));
+    } else if (parsedModel && !isValidating) {
+      form.reset(parsedModel, { keepValues: false });
+    }
+  }, [modes.isCreating, parsedModel, isValidating]);
+  console.log("render");
 
   // model create,edit,delete hook
   const {

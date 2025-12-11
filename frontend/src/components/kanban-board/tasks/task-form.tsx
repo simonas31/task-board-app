@@ -33,11 +33,12 @@ import z from "zod";
 
 const taskFormSchema = z.object({
   title: z.string().min(1, "Task title is required").default(""),
-  status: z.string().min(1, "Status is required").default(""),
+  status: z.string().min(1, "Status is required").optional(),
   description: z.string().optional().nullable().default(""),
   dueDate: z.iso.date().default(""),
   assignees: z.array(z.number()).optional().default([]),
-  priority: z.string().min(1, "Priority is required").default(""),
+  priority: z.string().min(1, "Priority is required").optional(),
+
   tags: z.array(z.number()).optional().default([]),
 });
 
@@ -77,9 +78,6 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
       selectedTask?.id ?? ""
     }`,
     fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
-    useFormOptions: {
-      defaultValues: mode === "Create" ? taskFormSchema.parse({}) : undefined,
-    },
   });
 
   // fetch users assigned to this project
@@ -146,32 +144,32 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
               formField={{
                 name: "status",
                 label: "Status",
-                render: ({ field, fieldState }) => (
-                  <Select
-                    {...field}
-                    value={field.value ?? ""}
-                    onValueChange={field.onChange}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger
-                      className="w-full"
-                      aria-invalid={fieldState.invalid}
+                render: ({ field, fieldState }) => {
+                  return (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                      disabled={isLoading}
                     >
-                      <SelectValue
-                        placeholder="Select status"
-                        defaultValue={field.value}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="Todo">To-do</SelectItem>
-                        <SelectItem value="InProgress">In Progress</SelectItem>
-                        <SelectItem value="InReview">In Review</SelectItem>
-                        <SelectItem value="Completed">Completed</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                ),
+                      <SelectTrigger
+                        className="w-full"
+                        aria-invalid={fieldState.invalid}
+                      >
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="Todo">To-do</SelectItem>
+                          <SelectItem value="InProgress">
+                            In Progress
+                          </SelectItem>
+                          <SelectItem value="InReview">In Review</SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  );
+                },
               }}
             />
 
@@ -233,8 +231,7 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
                 label: "Priority",
                 render: ({ field }) => (
                   <Select
-                    {...field}
-                    value={field.value}
+                    value={field.value ?? ""}
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger className="w-full">
