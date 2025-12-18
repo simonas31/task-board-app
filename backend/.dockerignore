@@ -35,7 +35,6 @@
 **/vendor
 **/.DS_Store
 .editorconfig
-.env.example
 LICENSE
 README.md
 
