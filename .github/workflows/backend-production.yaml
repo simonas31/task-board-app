@@ -3,17 +3,16 @@ name: Build & Push Backend (Docker → GHCR)
 on:
   push:
     branches: ["master"]
+    paths:
+      - "backend/**"
   pull_request:
     branches: ["master"]
+    paths:
+      - "backend/**"
 
 env:
   REGISTRY: ghcr.io
   IMAGE_BASE: ${{ github.repository }}
-
-# Set default working directory if using monorepo. Else remove this default
-defaults:
-  run:
-    working-directory: ./backend
 
 jobs:
   build-and-push:
@@ -52,7 +51,7 @@ jobs:
       - name: Build and push (php-fpm)
         uses: docker/build-push-action@v6
         with:
-          context: ./docker/common/php-fpm
+          context: ./backend/docker/common/php-fpm
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_php.outputs.tags }}
           labels: ${{ steps.meta_php.outputs.labels }}
@@ -73,7 +72,7 @@ jobs:
       - name: Build and push (nginx)
         uses: docker/build-push-action@v6
         with:
-          context: ./docker/production/nginx
+          context: ./backend/docker/production/nginx
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_nginx.outputs.tags }}
           labels: ${{ steps.meta_nginx.outputs.labels }}
