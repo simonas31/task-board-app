@@ -43,10 +43,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}-php-fpm
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,format=long
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+            type=sha,format=long
 
       - name: Build and push (php-fpm)
         uses: docker/build-push-action@v6
@@ -66,10 +64,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}-nginx
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,format=long
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+            type=sha,format=long
 
       - name: Build and push (nginx)
         uses: docker/build-push-action@v6
