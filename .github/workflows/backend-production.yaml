@@ -51,7 +51,9 @@ jobs:
       - name: Build and push (php-fpm)
         uses: docker/build-push-action@v6
         with:
-          context: ./backend/docker/common/php-fpm
+          context: ./backend
+          file: ./backend/docker/common/php-fpm/Dockerfile
+          target: production
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_php.outputs.tags }}
           labels: ${{ steps.meta_php.outputs.labels }}
@@ -72,7 +74,8 @@ jobs:
       - name: Build and push (nginx)
         uses: docker/build-push-action@v6
         with:
-          context: ./backend/docker/production/nginx
+          context: ./backend
+          file: ./backend/docker/production/nginx/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_nginx.outputs.tags }}
           labels: ${{ steps.meta_nginx.outputs.labels }}
