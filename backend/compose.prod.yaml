@@ -1,0 +1,60 @@
+services:
+  # 1. Nginx: Web server that receives requests and forwards PHP requests to php-fpm.
+  nginx:
+    container_name: nginx
+    build:
+      dockerfile: ./docker/production/nginx/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/production/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./:/var/www # Nginx may need access to public assets
+    networks:
+      - production-network
+    depends_on:
+      - php-fpm
+
+  # 2. PHP-FPM: The engine that executes the Laravel application code.
+  php-fpm:
+    container_name: php-fpm
+    build:
+      dockerfile: ./docker/common/php-fpm/Dockerfile
+      target: production
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www
+    networks:
+      - production-network
+    depends_on:
+      - postgres
+
+  # 4. Postgres: The database for Laravel.
+  postgres:
+    container_name: postgres
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - path: .env
+        required: true
+    volumes:
+      - db-data-dev:/var/lib/postgresql/data
+    networks:
+      - production-network
+
+#--- SHARED CONFIGURATION ---
+
+networks:
+  production-network:
+
+volumes:
+  db-data-dev:
