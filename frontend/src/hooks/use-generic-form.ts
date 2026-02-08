@@ -102,7 +102,6 @@ export default function useGenericForm<
       form.reset(parsedModel, { keepValues: false });
     }
   }, [modes.isCreating, parsedModel, isValidating]);
-  console.log("render");
 
   // model create,edit,delete hook
   const {

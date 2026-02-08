@@ -7,6 +7,8 @@ use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Models\Board;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TaskTag;
+use App\Models\TaskUser;
 use Illuminate\Http\JsonResponse;
 
 class TasksController extends ApiController
@@ -53,6 +55,10 @@ class TasksController extends ApiController
      */
     public function show(Project $project, Board $board, Task $task): JsonResponse
     {
+        $task = $task->toArray();
+        $task['assignees'] = TaskUser::where('task_id', $task['id'])->pluck('user_id')->toArray();
+        $task['tags'] = TaskTag::where('task_id', $task['id'])->pluck('tag_id')->toArray();
+
         return $this->jsonResponse($task);
     }
 
@@ -63,7 +69,21 @@ class TasksController extends ApiController
     {
         /** @var Task $task */
         $task->update($request->except(['assignees', 'tags']));
-        // unassign tags, assginees...
+
+        $data = $request->only('assignees', 'tags');
+        if (!empty($data['assignees'])) {
+            $assigneeIds = array_map(fn($id) => ['user_id' => $id], $data['assignees']);
+            $task->assigneesPivot()->createMany($assigneeIds);
+        }
+
+        if (!empty($data['tags'])) {
+            $tagIds = array_map(fn($id) => ['tag_id' => $id], $data['tags']);
+            $task->tagsPivot()->createMany($tagIds);
+        }
+
+        $task = $task->toArray();
+        $task['assignees'] = TaskUser::where('task_id', $task['id'])->pluck('user_id')->toArray();
+        $task['tags'] = TaskTag::where('task_id', $task['id'])->pluck('tag_id')->toArray();
 
         return $this->jsonResponse($task);
     }
