@@ -12,6 +12,7 @@ import { useParams } from "react-router";
 import useSWR from "swr";
 import { toast } from "sonner";
 import { kanbanReducer } from "@/reducers/kanban-reducer";
+import type { TaskFormSchema } from "./tasks/task-form";
 
 const initialState: KanbanState = {
   project: null,
@@ -26,6 +27,9 @@ const initialState: KanbanState = {
   addTask: () => {},
   updateTask: () => {},
   deleteTask: () => {},
+  isFormSheetOpen: false,
+  toggleCreationSheet: () => {},
+  setFormValues: () => {},
 };
 
 const KanbanProviderContext = React.createContext<KanbanState>(initialState);
@@ -68,30 +72,45 @@ export default function KanbanProvider({
 
   const setActiveBoard = React.useCallback(
     (board: Board) => dispatch({ type: "SET_ACTIVE_BOARD", payload: board }),
-    []
+    [],
   );
 
   const setSelectedTask = React.useCallback(
     (task: Task) => dispatch({ type: "SET_SELECTED_TASK", payload: task }),
-    []
+    [],
   );
 
   const addTask = React.useCallback(
     (boardId: number, task: Task) =>
       dispatch({ type: "ADD_TASK", payload: { boardId, task } }),
-    []
+    [],
   );
 
   const updateTask = React.useCallback(
     (boardId: number, task: Task) =>
       dispatch({ type: "UPDATE_TASK", payload: { boardId, task } }),
-    []
+    [],
   );
 
   const deleteTask = React.useCallback(
     (boardId: number, taskId: number) =>
       dispatch({ type: "DELETE_TASK", payload: { boardId, taskId } }),
-    []
+    [],
+  );
+
+  const toggleCreationSheet = React.useCallback(
+    (value: boolean) =>
+      dispatch({
+        type: "TOGGLE_CREATION_FORM_SHEET",
+        payload: { sheetState: value },
+      }),
+    [],
+  );
+
+  const setFormValues = React.useCallback(
+    (task: Partial<TaskFormSchema>) =>
+      dispatch({ type: "SET_FORM_VALUES", payload: { task } }),
+    [],
   );
 
   const value = React.useMemo(
@@ -104,6 +123,8 @@ export default function KanbanProvider({
       addTask,
       updateTask,
       deleteTask,
+      toggleCreationSheet,
+      setFormValues,
     }),
     [
       state,
@@ -114,7 +135,9 @@ export default function KanbanProvider({
       addTask,
       updateTask,
       deleteTask,
-    ]
+      toggleCreationSheet,
+      setFormValues,
+    ],
   );
 
   return (

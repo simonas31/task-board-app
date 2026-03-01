@@ -2,6 +2,7 @@ import StageContent from "./stage-content";
 import StageHeader from "./stage-header";
 import type { TaskStatus } from "@/types/KanbanProvider.types";
 import useKanban from "@/hooks/use-kanban";
+import * as React from "react";
 
 type StageProps = {
   name: string;
@@ -10,7 +11,9 @@ type StageProps = {
 };
 
 export default function Stage({ name, stage, indicatorColor }: StageProps) {
-  const { activeBoard, getStageTasks } = useKanban();
+  const [open, setOpen] = React.useState(false);
+  const { activeBoard, getStageTasks, toggleCreationSheet, setFormValues } =
+    useKanban();
 
   if (!activeBoard) {
     return <></>;
@@ -24,8 +27,12 @@ export default function Stage({ name, stage, indicatorColor }: StageProps) {
         name={name}
         indicatorColor={indicatorColor}
         tasksInStage={tasksInStage}
+        addHandler={() => {
+          toggleCreationSheet(true);
+          setFormValues({ status: stage });
+        }}
       />
-      <StageContent stage={stage} />
+      <StageContent stage={stage} open={open} setOpen={setOpen} />
     </div>
   );
 }

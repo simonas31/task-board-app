@@ -37,7 +37,7 @@ class TasksController extends ApiController
 
         $data = $request->only('assignees', 'tags');
         if (!empty($data['assignees'])) {
-            $assigneeIds = array_map(fn($id) => ['assignee_id' => $id], $data['assignees']);
+            $assigneeIds = array_map(fn($id) => ['user_id' => $id], $data['assignees']);
             $task->assigneesPivot()->createMany($assigneeIds);
         }
 
@@ -56,9 +56,8 @@ class TasksController extends ApiController
     {
         $this->authorize('view', [Task::class, $project, $board, $task]);
 
-        $task = $task->toArray();
-        $task['assignees'] = TaskUser::where('task_id', $task['id'])->pluck('user_id')->toArray();
-        $task['tags'] = TaskTag::where('task_id', $task['id'])->pluck('tag_id')->toArray();
+        $task->assignees = $task->assigneesPivot()->pluck('user_id')->toArray();
+        $task->tags = $task->tagsPivot()->pluck('tag_id')->toArray();
 
         return $this->jsonResponse($task);
     }

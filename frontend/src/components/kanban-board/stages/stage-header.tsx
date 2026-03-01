@@ -7,6 +7,7 @@ type StageHeaderProps = {
   name: string;
   tasksInStage?: number;
   indicatorColor?: "gray" | "blue" | "yellow" | "green";
+  addHandler: () => void;
 };
 
 const stageHeaderVariants = cva("", {
@@ -27,6 +28,7 @@ export default function StageHeader({
   name,
   tasksInStage,
   indicatorColor = "gray",
+  addHandler,
 }: StageHeaderProps) {
   return (
     <div className="flex justify-between items-center rounded-xl bg-gray-200 py-2 px-3">
@@ -35,7 +37,7 @@ export default function StageHeader({
           size={15}
           className={cn(
             stageHeaderVariants({ variant: indicatorColor }),
-            "stroke-[3px]"
+            "stroke-[3px]",
           )}
         />
         <span className="text-black">{name}</span>
@@ -45,7 +47,13 @@ export default function StageHeader({
           </Badge>
         )}
       </div>
-      <Plus size={20} className="text-gray-500" />
+      <Plus
+        size={20}
+        className="text-gray-500 hover:cursor-pointer rounded-full hover:bg-gray-300 transition-all"
+        onClick={() => {
+          addHandler();
+        }}
+      />
     </div>
   );
 }

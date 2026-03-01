@@ -7,14 +7,15 @@ import { Separator } from "../ui/separator";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Minus, Plus } from "lucide-react";
+import { validateSidebarProjects } from "@/hooks/use-sidebar-projects";
 
 const createProjectSchema = z.object({
-  name: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, "Project name is required").default(""),
   boards: z
     .array(
       z.object({
         name: z.string().min(1, "Board name is required"),
-      })
+      }),
     )
     .optional(),
 });
@@ -49,6 +50,8 @@ export default function CreateProjectForm() {
 
   async function onSubmit(formData: CreateProjectSchema) {
     await submitForm(formData);
+    form.reset();
+    await validateSidebarProjects();
   }
 
   return (
@@ -61,7 +64,13 @@ export default function CreateProjectForm() {
             label: "Project name",
             fieldLayout: "flex",
             render: ({ field }) => {
-              return <Input {...field} disabled={isLoading} />;
+              return (
+                <Input
+                  {...field}
+                  value={field.value ?? ""}
+                  disabled={isLoading}
+                />
+              );
             },
           }}
         />

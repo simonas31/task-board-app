@@ -10,7 +10,7 @@ type TaskProps = {
 
 export default function Task({ task }: TaskProps) {
   return (
-    <Card className="py-4 gap-2 transition-all hover:scale-105">
+    <Card className="py-4 gap-2 transition-all hover:scale-105 hover:cursor-pointer">
       <CardHeader>
         <Badge>Dashoard</Badge>
       </CardHeader>

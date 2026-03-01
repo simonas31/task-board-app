@@ -29,7 +29,7 @@ function getModes(mode: Mode) {
 export default function useGenericForm<
   TModel extends FieldValues,
   TSchema extends ZodObject<{ [key: string]: z.ZodType }>,
-  TReturnModel = TModel
+  TReturnModel = TModel,
 >({
   mode,
   schema,
@@ -54,17 +54,17 @@ export default function useGenericForm<
   // initialize fetchers, memoize functions
   const createFetcher = React.useCallback(
     (url: string, body?: OutputType) => api.post(url, body),
-    []
+    [],
   );
 
   const updateFetcher = React.useCallback(
     (url: string, body?: OutputType) => api.put(url, body),
-    []
+    [],
   );
 
   const modelFetcher = React.useCallback(
     (url: string) => api.get<TReturnModel>(url).then((res) => res.data),
-    []
+    [],
   );
 
   // if editing fetch record
@@ -75,7 +75,7 @@ export default function useGenericForm<
     isValidating,
   } = useSWR<TReturnModel>(
     modes.isUpdating ? fetchModelUrl : null,
-    modes.isUpdating ? modelFetcher : null
+    modes.isUpdating ? modelFetcher : null,
   );
 
   const parsedModel = React.useMemo(() => {
@@ -111,12 +111,12 @@ export default function useGenericForm<
     error: mutationError,
   } = useApi<TReturnModel, OutputType>(
     mutateUrl,
-    modes.isUpdating ? updateFetcher : createFetcher
+    modes.isUpdating ? updateFetcher : createFetcher,
   );
 
   const isLoading = React.useMemo(
     () => loadingModel || loadingMutation,
-    [loadingModel, loadingMutation]
+    [loadingModel, loadingMutation],
   );
 
   // use React.useEffect to trigger rerender if submission was successful or not
@@ -143,7 +143,7 @@ export default function useGenericForm<
         onSuccess();
       } else {
         toast.success(
-          `Record ${modes.isCreating ? "created" : "updated"} successfully`
+          `Record ${modes.isCreating ? "created" : "updated"} successfully`,
         );
       }
     }

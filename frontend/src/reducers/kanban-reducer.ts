@@ -1,3 +1,4 @@
+import type { TaskFormSchema } from "@/components/kanban-board/tasks/task-form";
 import type {
   KanbanProject,
   Board,
@@ -12,7 +13,9 @@ type Action =
   | { type: "DELETE_BOARD"; payload: { boardId: number } }
   | { type: "ADD_TASK"; payload: { boardId: number; task: Task } }
   | { type: "UPDATE_TASK"; payload: { boardId: number; task: Task } }
-  | { type: "DELETE_TASK"; payload: { boardId: number; taskId: number } };
+  | { type: "DELETE_TASK"; payload: { boardId: number; taskId: number } }
+  | { type: "TOGGLE_CREATION_FORM_SHEET"; payload: { sheetState: boolean } }
+  | { type: "SET_FORM_VALUES"; payload: { task: Partial<TaskFormSchema> } };
 
 export function kanbanReducer(state: KanbanState, action: Action): KanbanState {
   switch (action.type) {
@@ -33,7 +36,7 @@ export function kanbanReducer(state: KanbanState, action: Action): KanbanState {
 
       const isActiveBoardDeleted = state.activeBoard?.id === boardId;
       const newActiveBoard = isActiveBoardDeleted
-        ? newBoards?.[0] ?? null
+        ? (newBoards?.[0] ?? null)
         : state.activeBoard;
 
       return {
@@ -51,12 +54,12 @@ export function kanbanReducer(state: KanbanState, action: Action): KanbanState {
       const { boardId, task } = action.payload;
 
       const newBoards = state.project.boards?.map((b) =>
-        b.id === boardId ? { ...b, tasks: [...b.tasks, task] } : b
+        b.id === boardId ? { ...b, tasks: [...b.tasks, task] } : b,
       );
 
       const newActiveBoard =
         state.activeBoard?.id === boardId
-          ? newBoards?.find((b) => b.id === boardId) ?? null
+          ? (newBoards?.find((b) => b.id === boardId) ?? null)
           : state.activeBoard;
 
       return {
@@ -79,12 +82,12 @@ export function kanbanReducer(state: KanbanState, action: Action): KanbanState {
               ...b,
               tasks: b.tasks.map((t) => (t.id === task.id ? task : t)),
             }
-          : b
+          : b,
       );
 
       const newActiveBoard =
         state.activeBoard?.id === boardId
-          ? newBoards?.find((b) => b.id === boardId) ?? null
+          ? (newBoards?.find((b) => b.id === boardId) ?? null)
           : state.activeBoard;
 
       return {
@@ -107,21 +110,38 @@ export function kanbanReducer(state: KanbanState, action: Action): KanbanState {
               ...b,
               tasks: b.tasks.filter((t) => t.id !== taskId),
             }
-          : b
+          : b,
       );
 
       const newActiveBoard =
         state.activeBoard?.id === boardId
-          ? newBoards?.find((b) => b.id === boardId) ?? null
+          ? (newBoards?.find((b) => b.id === boardId) ?? null)
           : state.activeBoard;
 
       return {
         ...state,
         activeBoard: newActiveBoard,
+        selectedTask: null,
         project: {
           ...state.project,
           boards: newBoards,
         },
+      };
+    }
+
+    case "TOGGLE_CREATION_FORM_SHEET": {
+      const sheetState = action.payload.sheetState;
+      return {
+        ...state,
+        isFormSheetOpen: sheetState,
+        creationFormValues: !sheetState ? {} : state.creationFormValues,
+      };
+    }
+
+    case "SET_FORM_VALUES": {
+      return {
+        ...state,
+        creationFormValues: action.payload.task,
       };
     }
 

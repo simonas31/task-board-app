@@ -1,3 +1,4 @@
+import type { TaskFormSchema } from "@/components/kanban-board/tasks/task-form";
 import type { Project } from "@/components/projects/create-project-form";
 import type React from "react";
 
@@ -37,6 +38,10 @@ export type KanbanState = {
   addTask: (boardId: number, task: Task) => void;
   updateTask: (boardId: number, task: Task) => void;
   deleteTask: (boardId: number, taskId: number) => void;
+  isFormSheetOpen: boolean;
+  toggleCreationSheet: (value: boolean) => void;
+  creationFormValues?: Partial<TaskFormSchema>;
+  setFormValues: (task: Partial<TaskFormSchema>) => void;
 };
 
 export type KanbanProviderProps = {

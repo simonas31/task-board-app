@@ -42,11 +42,12 @@ const taskFormSchema = z.object({
   tags: z.array(z.number()).optional().default([]),
 });
 
-type TaskFormSchema = z.infer<typeof taskFormSchema>;
+export type TaskFormSchema = z.infer<typeof taskFormSchema>;
 
 type TaskFormProps = {
   mode: Mode;
-  closeSheet: () => void;
+  closeSheet?: () => void;
+  values?: Partial<TaskFormSchema>;
 };
 
 type Assignee = {
@@ -58,7 +59,20 @@ const assigneesFetcher = (url: string) => api.get(url).then((res) => res.data);
 
 const deleteTaskFetcher = (url: string) => api.delete(url);
 
-export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
+const buildFormValues = (
+  values: Partial<TaskFormSchema>,
+): Partial<TaskFormSchema> => {
+  return {
+    ...values,
+    title: values.title ?? "",
+    description: values.description ?? "",
+    dueDate: values.dueDate ?? "",
+    status: values.status ?? "",
+    priority: values.priority ?? "",
+  };
+};
+
+export default function TaskForm({ mode, closeSheet, values }: TaskFormProps) {
   const {
     project,
     activeBoard: board,
@@ -67,6 +81,11 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
     updateTask,
     deleteTask,
   } = useKanban();
+
+  const builtValues = React.useMemo(
+    () => (values ? buildFormValues(values) : undefined),
+    [values],
+  );
 
   const { form, submitForm, isLoading } = useGenericForm<
     Task,
@@ -78,19 +97,30 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
       selectedTask?.id ?? ""
     }`,
     fetchModelUrl: `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`,
+    useFormOptions: {
+      defaultValues: builtValues,
+    },
   });
+
+  React.useEffect(() => {
+    if (!builtValues) return;
+    form.reset(builtValues);
+  }, [builtValues, form]);
 
   // fetch users assigned to this project
   const { data: assignees, isLoading: loadingAssignees } = useSWR<Assignee[]>(
     `projects/${project?.id}/assignees`,
-    assigneesFetcher
+    assigneesFetcher,
   );
 
   async function onSubmit(data: TaskFormSchema) {
     const saved = await submitForm(data);
     if (!saved || !board) return;
 
-    if (mode === "Create") addTask(board.id, saved);
+    if (mode === "Create") {
+      addTask(board.id, saved);
+      closeSheet?.();
+    }
     if (mode === "Update") updateTask(board.id, saved);
   }
 
@@ -102,7 +132,7 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
     mode === "Update"
       ? `projects/${project?.id}/boards/${board?.id}/tasks/${selectedTask?.id}`
       : "",
-    deleteTaskFetcher
+    deleteTaskFetcher,
   );
 
   const hasDeletedRef = React.useRef(false);
@@ -115,7 +145,7 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
 
     if (board?.id && selectedTask?.id) {
       deleteTask(board.id, selectedTask.id);
-      closeSheet();
+      closeSheet?.();
     }
   }, [deleted]);
 
@@ -301,7 +331,7 @@ export default function TaskForm({ mode, closeSheet }: TaskFormProps) {
           <div
             className={cn(
               "flex mt-4",
-              mode === "Create" ? "justify-end" : "justify-between"
+              mode === "Create" ? "justify-end" : "justify-between",
             )}
           >
             {mode === "Update" && (

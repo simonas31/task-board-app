@@ -13,21 +13,10 @@ import {
   SidebarMenuSubItem,
 } from "../ui/sidebar";
 import { Link } from "react-router";
-import useSWR from "swr";
-import { api } from "@/lib/axios";
-
-type SidebarProjectType = {
-  id: number;
-  name: string;
-};
-
-const projectsFetcher = (url: string) => api.get(url).then((res) => res.data);
+import { useSidebarProjects } from "@/hooks/use-sidebar-projects";
 
 export default function NavProjects() {
-  const { data: projects, isLoading } = useSWR<SidebarProjectType[]>(
-    "/sidebar/projects",
-    projectsFetcher
-  );
+  const { data: projects, isLoading } = useSidebarProjects();
 
   return (
     <SidebarGroup>

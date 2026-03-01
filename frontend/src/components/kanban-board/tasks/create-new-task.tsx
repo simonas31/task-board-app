@@ -10,10 +10,15 @@ import {
 import TaskForm from "./task-form";
 
 export default function CreateNewTaskButton() {
-  const { loadingProject } = useKanban();
+  const {
+    loadingProject,
+    isFormSheetOpen,
+    toggleCreationSheet,
+    creationFormValues,
+  } = useKanban();
 
   return (
-    <Sheet>
+    <Sheet open={isFormSheetOpen} onOpenChange={toggleCreationSheet}>
       <SheetTrigger asChild>
         <Button type="button" isLoading={loadingProject}>
           <Plus />
@@ -23,7 +28,11 @@ export default function CreateNewTaskButton() {
       <SheetContent className="w-full sm:min-w-[540px] px-5 py-3">
         <HiddenHeader />
         <p className="text-2xl font-semibold">Create new task</p>
-        <TaskForm mode="Create" />
+        <TaskForm
+          mode="Create"
+          closeSheet={() => toggleCreationSheet(false)}
+          values={creationFormValues}
+        />
       </SheetContent>
     </Sheet>
   );
