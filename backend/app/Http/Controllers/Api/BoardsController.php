@@ -11,16 +11,13 @@ use Illuminate\Http\Request;
 
 class BoardsController extends ApiController
 {
-    public function __construct()
-    {
-        $this->authorizeResource(Board::class);
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request, Project $project): JsonResponse
     {
+        $this->authorize('delete', [Board::class, $project]);
+
         // fetch user boards
         $user = $request->user();
 
@@ -36,6 +33,7 @@ class BoardsController extends ApiController
      */
     public function store(StoreBoardRequest $request): JsonResponse
     {
+        $this->authorize('create', [Board::class]);
         $board = Board::create($request->validated());
         return $this->jsonResponse($board, 201);
     }
@@ -43,16 +41,19 @@ class BoardsController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(Board $board)
+    public function show(Project $project, Board $board)
     {
+        $this->authorize('view', [Board::class, $project, $board]);
         return $this->jsonResponse($board);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBoardRequest $request, Board $board): JsonResponse
+    public function update(UpdateBoardRequest $request, Project $project, Board $board): JsonResponse
     {
+        $this->authorize('update', [Board::class, $project, $board]);
+
         $board->update($request->validated());
 
         return $this->jsonResponse($board);
@@ -61,8 +62,10 @@ class BoardsController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Board $board): JsonResponse
+    public function destroy(Project $project, Board $board): JsonResponse
     {
+        $this->authorize('delete', [Board::class, $project, $board]);
+
         $board->delete();
 
         return $this->jsonResponse($board);

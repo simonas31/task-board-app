@@ -20,10 +20,9 @@ class DataAccessService
     public function projectsQuery(): Builder
     {
         return Project::query()
-            ->whereIn('id', function ($q) {
-                return $q->select('project_id')
-                    ->from('project_user')
-                    ->where('user_id', $this->user->getKey());
-            });
+            ->whereHas(
+                'users',
+                fn($q) => $q->where('users.id', $this->user->getKey())
+            );
     }
 }

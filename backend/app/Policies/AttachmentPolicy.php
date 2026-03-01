@@ -25,6 +25,12 @@ class AttachmentPolicy
         return $task->getKey() === $attachment->task_id;
     }
 
+    public function create(User $user, Task $task): bool
+    {
+        return true;
+    }
+
+
     /**
      * Determine whether the user can update the model.
      */

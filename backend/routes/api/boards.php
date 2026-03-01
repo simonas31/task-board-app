@@ -7,5 +7,5 @@ Route::group([
     'middleware' => 'jwt',
     'prefix' => 'projects/{project}'
 ], function () {
-    Route::apiResource('boards', BoardsController::class);
+    Route::apiResource('boards', BoardsController::class)->withTrashed();
 });

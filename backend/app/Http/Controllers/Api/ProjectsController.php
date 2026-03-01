@@ -9,30 +9,20 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\DataAccessService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProjectsController extends ApiController
 {
     public function __construct(
         protected DataAccessService $accessService
-    ) {
-        $this->authorizeResource(Project::class);
-    }
-
-    protected function resourceMethodsWithoutModels(): array
-    {
-        return [
-            ...parent::resourceMethodsWithoutModels(),
-            'sidebarProjects' => 'sidebarProjects',
-            'projectAssignees' => 'projectAssignees'
-        ];
-    }
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', [Project::class]);
+
         $projects = $this->accessService
             ->projectsQuery()
             ->with('boards')
@@ -49,6 +39,8 @@ class ProjectsController extends ApiController
      */
     public function sidebarProjects(): JsonResponse
     {
+        $this->authorize('sidebarProjects', [Project::class]);
+
         $projects = $this->accessService
             ->projectsQuery()
             ->with('boards')
@@ -63,6 +55,8 @@ class ProjectsController extends ApiController
      */
     public function store(StoreProjectRequest $request): JsonResponse
     {
+        $this->authorize('create', [Project::class]);
+
         /** @var User $user */
         $user = $request->user();
 
@@ -82,6 +76,7 @@ class ProjectsController extends ApiController
      */
     public function show(Project $project): JsonResponse
     {
+        $this->authorize('view', [$project]);
         $project->load(['boards.tasks']);
         return $this->jsonResponse($project);
     }
@@ -91,6 +86,7 @@ class ProjectsController extends ApiController
      */
     public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
+        $this->authorize('update', [$project]);
         $project->update($request->validated());
         return $this->jsonResponse($project);
     }
@@ -100,10 +96,7 @@ class ProjectsController extends ApiController
      */
     public function destroy(Project $project): JsonResponse
     {
-        $boards = $project
-            ->boards()
-            ->with('tasks')
-            ->get();
+        $this->authorize('delete', [$project]);
 
         /** @var Board $board */
         foreach ($project->boards as $board) {
@@ -120,6 +113,8 @@ class ProjectsController extends ApiController
 
     public function projectAssignees(Project $project): JsonResponse
     {
+        $this->authorize('projectAssignees', [$project]);
+
         $assignees = $project
             ->assignees()
             ->get()

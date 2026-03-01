@@ -10,16 +10,12 @@ use Illuminate\Http\JsonResponse;
 
 class CommentsController extends ApiController
 {
-    public function __construct()
-    {
-        $this->authorizeResource(Comment::class);
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index(Task $task): JsonResponse
     {
+        $this->authorize('viewAny', [Comment::class, $task]);
         $comments = $task->comments()->get();
         return $this->jsonResponse(compact('comments'));
     }
@@ -30,6 +26,7 @@ class CommentsController extends ApiController
      */
     public function store(StoreTaskRequest $request, Task $task): JsonResponse
     {
+        $this->authorize('create', [Comment::class, $task]);
         $comment = Comment::create($request->validated());
         return $this->jsonResponse($comment, 201);
     }
@@ -39,6 +36,7 @@ class CommentsController extends ApiController
      */
     public function show(Task $task, Comment $comment): JsonResponse
     {
+        $this->authorize('view', [Comment::class, $task, $comment]);
         return $this->jsonResponse($comment);
     }
 
@@ -47,6 +45,7 @@ class CommentsController extends ApiController
      */
     public function update(UpdateTaskRequest $request, Task $task, Comment $comment): JsonResponse
     {
+        $this->authorize('update', [Comment::class, $task, $comment]);
         $comment->update($request->validated());
         return $this->jsonResponse($comment);
     }
@@ -56,6 +55,7 @@ class CommentsController extends ApiController
      */
     public function destroy(Task $task, Comment $comment): JsonResponse
     {
+        $this->authorize('delete', [Comment::class, $task, $comment]);
         $comment->delete();
         return $this->jsonResponse($comment);
     }
