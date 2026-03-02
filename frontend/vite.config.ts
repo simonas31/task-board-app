@@ -10,6 +10,7 @@ export default defineConfig({
     host: true,
     port: 3000,
     strictPort: true,
+    allowedHosts: ["task-board-app.test", "localhost", "127.0.0.1"],
   },
   resolve: {
     alias: {

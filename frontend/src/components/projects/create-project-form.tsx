@@ -50,7 +50,7 @@ export default function CreateProjectForm() {
 
   async function onSubmit(formData: CreateProjectSchema) {
     await submitForm(formData);
-    form.reset();
+    form.reset({});
     await validateSidebarProjects();
   }
 
