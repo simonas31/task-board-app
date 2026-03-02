@@ -42,7 +42,6 @@ class AuthController extends ApiController
                     'token',
                     $accessToken,
                     $accessTokenTTL,
-                    secure: true,
                     httpOnly: true
                 )
             )
@@ -51,7 +50,6 @@ class AuthController extends ApiController
                     'refreshToken',
                     $refreshToken,
                     $refreshTokenTTL,
-                    secure: true,
                     httpOnly: true
                 )
             );
