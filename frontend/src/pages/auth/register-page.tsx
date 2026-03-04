@@ -58,6 +58,12 @@ const RegisterPage = () => {
 
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      firstname: "",
+      lastname: "",
+    },
   });
 
   async function onSubmit(data: RegisterSchema) {
@@ -83,7 +89,7 @@ const RegisterPage = () => {
                 formField={{
                   name: "firstname",
                   label: "First name",
-                  render: (field) => {
+                  render: ({ field }) => {
                     return <Input disabled={isLoading} {...field} />;
                   },
                 }}
@@ -93,7 +99,7 @@ const RegisterPage = () => {
                 formField={{
                   name: "lastname",
                   label: "Last name",
-                  render: (field) => {
+                  render: ({ field }) => {
                     return <Input disabled={isLoading} {...field} />;
                   },
                 }}
@@ -103,7 +109,7 @@ const RegisterPage = () => {
                 formField={{
                   name: "email",
                   label: "Email",
-                  render: (field) => {
+                  render: ({ field }) => {
                     return (
                       <InputGroup>
                         <InputGroupInput disabled={isLoading} {...field} />
@@ -120,7 +126,7 @@ const RegisterPage = () => {
                 formField={{
                   name: "password",
                   label: "Password",
-                  render: (field) => {
+                  render: ({ field }) => {
                     return (
                       <InputGroup>
                         <InputGroupInput
